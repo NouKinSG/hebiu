@@ -42,18 +42,20 @@ public enum ScriptSource {
         let extra = ["/opt/homebrew/bin", "/usr/local/bin", "\(home)/.local/bin", "\(home)/bin"]
         env["PATH"] = (extra + [env["PATH"] ?? "/usr/bin:/bin:/usr/sbin:/sbin"]).joined(separator: ":")
         process.environment = env
-        let out = Pipe(), err = Pipe()
+        // 输出写进临时文件、跑完再读：不占后台线程，输出再多也不会因为管道塞满卡住
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("hebiu-source-\(UUID().uuidString)")
+        let outURL = tmp.appendingPathExtension("out"), errURL = tmp.appendingPathExtension("err")
+        FileManager.default.createFile(atPath: outURL.path, contents: nil)
+        FileManager.default.createFile(atPath: errURL.path, contents: nil)
+        defer {
+            try? FileManager.default.removeItem(at: outURL)
+            try? FileManager.default.removeItem(at: errURL)
+        }
+        let out = try FileHandle(forWritingTo: outURL), err = try FileHandle(forWritingTo: errURL)
+        defer { try? out.close(); try? err.close() }
         process.standardOutput = out
         process.standardError = err
         process.standardInput = FileHandle.nullDevice
-
-        // 边跑边读，输出很多时不会因为管道塞满卡住
-        var outData = Data(), errData = Data()
-        let group = DispatchGroup()
-        group.enter()
-        DispatchQueue.global().async { outData = out.fileHandleForReading.readDataToEndOfFile(); group.leave() }
-        group.enter()
-        DispatchQueue.global().async { errData = err.fileHandleForReading.readDataToEndOfFile(); group.leave() }
 
         try process.run()
         let deadline = Date().addingTimeInterval(timeout)
@@ -62,10 +64,10 @@ public enum ScriptSource {
             process.terminate()
             Thread.sleep(forTimeInterval: 0.5)
             if process.isRunning { kill(process.processIdentifier, SIGKILL) }
-            _ = group.wait(timeout: .now() + 2)
             throw Failure.timeout
         }
-        _ = group.wait(timeout: .now() + 5)
+        let outData = (try? Data(contentsOf: outURL)) ?? Data()
+        let errData = (try? Data(contentsOf: errURL)) ?? Data()
         guard process.terminationStatus == 0 else {
             let message = String(decoding: errData.prefix(500), as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
             throw Failure.exit(process.terminationStatus, message)

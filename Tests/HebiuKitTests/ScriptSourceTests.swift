@@ -35,6 +35,24 @@ struct ScriptSourceTests {
         #expect(try ScriptSource.run(url, name: "我的来源").first?.title == "我的来源")
     }
 
+    @Test func 输出很多也能读全() throws {
+        let (url, dir) = try script(#"python3 -c 'import json; print(json.dumps([{"id": str(i), "title": "x" * 200} for i in range(3000)]))'"#)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        #expect(try ScriptSource.run(url, name: "big").count == 3000)
+    }
+
+    @Test func 好几个同时跑互不影响() throws {
+        let runs = (0..<8).map { i in try! script(#"sleep 0.3; echo "[{\"id\":\"\#(i)\",\"title\":\"t\"}]""#) }
+        defer { runs.forEach { try? FileManager.default.removeItem(at: $0.1) } }
+        var ids = [String?](repeating: nil, count: runs.count)
+        let lock = NSLock()
+        DispatchQueue.concurrentPerform(iterations: runs.count) { i in
+            let id = try? ScriptSource.run(runs[i].0, name: "p\(i)").first?.id
+            lock.lock(); ids[i] = id; lock.unlock()
+        }
+        #expect(ids == (0..<8).map { String($0) })
+    }
+
     @Test func 失败退出码() throws {
         let (url, dir) = try script("echo 'glab 没登录' >&2; exit 3")
         defer { try? FileManager.default.removeItem(at: dir) }
