@@ -4,8 +4,10 @@ jobs:
   test:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: 单元测试
-        run: swift test
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tee test.log || { grep -E "✘|error:" test.log | head -30 | sed 's/^/::error::/'; exit 1; }
       - name: 编译程序
         run: swift build -c release --product Hebiu
