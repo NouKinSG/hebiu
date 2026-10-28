@@ -1,0 +1,17 @@
+#!/bin/bash
+# hebiu 命令行。动作（hebiu done）只往事件文件追加一行，不依赖程序；
+# 待办等其他命令转给装好的 Hebiu.app 处理
+set -u
+HOME_DIR="${HEBIU_HOME:-$HOME/.hebiu}"
+APP_BIN="$HOME/Applications/Hebiu.app/Contents/MacOS/Hebiu"
+[ -x "$APP_BIN" ] || APP_BIN="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)/build/Hebiu.app/Contents/MacOS/Hebiu"
+
+case "${1:-help}" in
+  todo|say|source|sources|memory|diary|focus|habit|habits|note|notes|settings|version|help|--help|actions)
+    [ -x "$APP_BIN" ] || { echo "找不到 Hebiu.app，先在项目目录运行 make install" >&2; exit 1; }
+    exec "$APP_BIN" "$@" ;;
+  *)
+    mkdir -p "$HOME_DIR" 2>/dev/null
+    printf '%s %s\n' "$(date +%s)" "$1" >> "$HOME_DIR/events" 2>/dev/null
+    exit 0 ;;
+esac

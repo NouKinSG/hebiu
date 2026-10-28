@@ -1,0 +1,158 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent}#s{width:768px;height:768px}</style></head>
+<body><div id="s"></div>
+<script>
+// Biu：圆滚滚的小团子，头顶一颗薄荷色小芽。所有表情由部件拼出来：眼睛、嘴、手、小道具、身体倾斜和压扁
+const INK = "#3B2F35", BODY = "#FFF7EE", SHADE = "#F3E3D6", PINK = "#F08AA8", MINT = "#8CC7A1", MINT2 = "#6FB28A";
+
+function eyes(kind) {
+  const L = [160, 238], R = [240, 238];
+  const open = ([x, y], s = 1) => `<ellipse cx="${x}" cy="${y}" rx="${13 * s}" ry="${17 * s}" fill="${INK}"/>
+     <circle cx="${x + 4 * s}" cy="${y - 6 * s}" r="${5 * s}" fill="#fff"/><circle cx="${x - 4 * s}" cy="${y + 6 * s}" r="${2.2 * s}" fill="#fff"/>`;
+  const closed = ([x, y]) => `<path d="M${x - 14} ${y + 2} Q${x} ${y + 12} ${x + 14} ${y + 2}" stroke="${INK}" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+  const happy = ([x, y]) => `<path d="M${x - 14} ${y + 6} Q${x} ${y - 12} ${x + 14} ${y + 6}" stroke="${INK}" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+  const flat = ([x, y]) => `<path d="M${x - 14} ${y + 4} L${x + 14} ${y + 4}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>`;
+  const spiral = ([x, y]) => `<path d="M${x} ${y} m-2 0 a3 3 0 1 1 6 0 a7 7 0 1 1 -14 0 a11 11 0 1 1 22 0 a15 15 0 1 1 -30 0" stroke="${INK}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+  const star = ([x, y]) => `<path d="${starPath(x, y, 17, 7)}" fill="${PINK}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+  const angry = ([x, y], side) => `${open([x, y + 3], .85)}<path d="M${x - 16} ${y - 18 + (side < 0 ? -6 : 6)} L${x + 16} ${y - 18 + (side < 0 ? 6 : -6)}" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>`;
+  const look = ([x, y], dx, dy) => `<ellipse cx="${x + dx}" cy="${y + dy}" rx="13" ry="17" fill="${INK}"/><circle cx="${x + dx + 4}" cy="${y + dy - 6}" r="5" fill="#fff"/>`;
+  switch (kind) {
+    case "open": return open(L) + open(R);
+    case "big": return open(L, 1.35) + open(R, 1.35);
+    case "closed": return closed(L) + closed(R);
+    case "happy": return happy(L) + happy(R);
+    case "flat": return flat(L) + flat(R);
+    case "wink": return happy(L) + open(R);
+    case "spiral": return spiral(L) + spiral(R);
+    case "star": return star(L) + star(R);
+    case "angry": return angry(L, -1) + angry(R, 1);
+    case "up": return look(L, 4, -8) + look(R, 4, -8);
+    case "down": return look(L, 0, 6) + look(R, 0, 6);
+  }
+}
+
+function starPath(cx, cy, R, r) {
+  let d = "";
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R;
+    d += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr).toFixed(1);
+  }
+  return d + "Z";
+}
+
+function mouth(kind) {
+  const x = 200, y = 272;
+  switch (kind) {
+    case "smile": return `<path d="M${x - 12} ${y} Q${x} ${y + 12} ${x + 12} ${y}" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    case "open": return `<path d="M${x - 16} ${y - 2} Q${x} ${y + 26} ${x + 16} ${y - 2} Z" fill="${INK}"/><path d="M${x - 9} ${y + 12} Q${x} ${y + 6} ${x + 9} ${y + 12} Q${x} ${y + 20} ${x - 9} ${y + 12}Z" fill="${PINK}"/>`;
+    case "o": return `<ellipse cx="${x}" cy="${y + 6}" rx="9" ry="11" fill="${INK}"/>`;
+    case "flat": return `<path d="M${x - 10} ${y + 4} L${x + 10} ${y + 4}" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>`;
+    case "grin": return `<path d="M${x - 24} ${y - 4} Q${x} ${y + 30} ${x + 24} ${y - 4} Z" fill="${INK}"/><path d="M${x + 4} ${y - 3} L${x + 14} ${y - 3} L${x + 9} ${y + 8}Z" fill="#fff"/><path d="M${x - 12} ${y + 13} Q${x} ${y + 6} ${x + 12} ${y + 13} Q${x} ${y + 22} ${x - 12} ${y + 13}Z" fill="${PINK}"/>`;
+    case "pout": return `<path d="M${x - 8} ${y} Q${x - 2} ${y + 6} ${x - 6} ${y + 10} Q${x - 2} ${y + 14} ${x - 8} ${y + 20}" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    case "wavy": return `<path d="M${x - 16} ${y + 6} q4 -6 8 0 t8 0 t8 0 t8 0" stroke="${INK}" stroke-width="5.5" fill="none" stroke-linecap="round"/>`;
+    case "tongue": return `<path d="M${x - 14} ${y} Q${x} ${y + 8} ${x + 14} ${y}" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M${x - 2} ${y + 4} q8 0 9 10 q-1 9 -9 9 q-7 0 -6 -10Z" fill="${PINK}" stroke="${INK}" stroke-width="4"/>`;
+    case "cat": return `<path d="M${x - 16} ${y} q8 10 16 0 q8 10 16 0" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  }
+}
+
+function cheeks(strong) {
+  const o = strong ? .8 : .45;
+  let s = `<ellipse cx="138" cy="266" rx="20" ry="12" fill="${PINK}" opacity="${o}"/><ellipse cx="262" cy="266" rx="20" ry="12" fill="${PINK}" opacity="${o}"/>`;
+  if (strong) for (const cx of [138, 262]) s += [-8, 0, 8].map(dx => `<path d="M${cx + dx - 3} ${262} l6 -8" stroke="${PINK}" stroke-width="3" stroke-linecap="round" opacity=".9"/>`).join("");
+  return s;
+}
+
+// 手：左右两个小圆手，位置可调
+function arms(kind) {
+  const hand = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="22" ry="18" fill="${BODY}" stroke="${INK}" stroke-width="7"/>`;
+  switch (kind) {
+    case "down": return hand(88, 300) + hand(312, 300);
+    case "wave": return hand(88, 300) + hand(318, 200);
+    case "up": return hand(84, 206) + hand(316, 206);
+    case "chin": return hand(88, 300) + hand(232, 296);
+    case "cheeks": return hand(122, 262) + hand(278, 262);
+    case "tea": return hand(88, 300) + hand(300, 296);
+    case "heart": return hand(170, 300) + hand(230, 300);
+    case "typeL": return hand(150, 318) + hand(250, 322);
+    case "typeR": return hand(150, 322) + hand(250, 318);
+    case "type": return hand(150, 320) + hand(250, 320);
+    default: return "";
+  }
+}
+
+const extras = {
+  laptop: `<rect x="120" y="318" width="160" height="62" rx="10" fill="#C9C2CC" stroke="${INK}" stroke-width="7"/><circle cx="200" cy="349" r="7" fill="#fff" opacity=".8"/>`,
+  tea: `<g transform="translate(300 245)"><path d="M-26 0 L26 0 L20 70 Q0 78 -20 70Z" fill="#F4D9C0" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M-24 14 L24 14" stroke="${INK}" stroke-width="4"/><circle cx="-8" cy="56" r="5" fill="${INK}"/><circle cx="7" cy="60" r="5" fill="${INK}"/><circle cx="2" cy="47" r="5" fill="${INK}"/>
+        <path d="M8 2 L22 -40" stroke="${PINK}" stroke-width="8" stroke-linecap="round"/></g>`,
+  hearts: [[110, 140, 1], [300, 120, .8], [330, 200, .6]].map(([x, y, s]) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 10 C-18 -6 -14 -22 0 -12 C14 -22 18 -6 0 10Z" fill="${PINK}" stroke="${INK}" stroke-width="4"/>`).join(""),
+  heartBig: `<path transform="translate(200 330) scale(1.6)" d="M0 10 C-18 -6 -14 -22 0 -12 C14 -22 18 -6 0 10Z" fill="${PINK}" stroke="${INK}" stroke-width="4"/>`,
+  sparkles: [[100, 150, 1], [305, 135, .8], [330, 230, .6]].map(([x, y, s]) => `<path d="${starPath(x, y, 16 * s, 5 * s)}" fill="#FFD36E" stroke="${INK}" stroke-width="3"/>`).join(""),
+  zzz: `<text x="290" y="150" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="46" fill="#A99BC4">Z</text><text x="325" y="112" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="32" fill="#A99BC4">z</text>`,
+  question: `<text x="296" y="150" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="64" fill="${PINK}" stroke="${INK}" stroke-width="3">?</text>`,
+  bang: `<text x="300" y="150" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="68" fill="#FFB347" stroke="${INK}" stroke-width="3">!</text>`,
+  sweat: `<path d="M300 170 q14 22 0 30 q-14 -8 0 -30Z" fill="#9FD3F0" stroke="${INK}" stroke-width="4"/>`,
+  anger: `<g transform="translate(300 150)" stroke="${PINK}" stroke-width="7" stroke-linecap="round" fill="none"><path d="M-14 -4 q6 -2 4 -10"/><path d="M4 -14 q2 6 10 4"/><path d="M14 4 q-6 2 -4 10"/><path d="M-4 14 q-2 -6 -10 -4"/></g>`,
+  swirl: [[140, 128, .7], [200, 108, .55], [262, 124, .7]].map(([x, y, s]) => `<path d="${starPath(x, y, 16 * s, 6 * s)}" fill="#C9B8E6" stroke="${INK}" stroke-width="3"/>`).join(""),
+  tears: `<path d="M150 262 q-6 18 0 26" stroke="#9FD3F0" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M250 262 q6 18 0 26" stroke="#9FD3F0" stroke-width="7" stroke-linecap="round" fill="none"/>`,
+};
+
+// 每一帧：眼睛、嘴、手、脸红、小道具、身体倾斜（度）、压扁（y 方向）、前景/背景道具
+const FRAMES = {
+  idle:      { eyes: "open", mouth: "smile", arms: "down" },
+  blink:     { eyes: "closed", mouth: "smile", arms: "down" },
+  wave:      { eyes: "happy", mouth: "open", arms: "wave", tilt: 5 },
+  think:     { eyes: "up", mouth: "flat", arms: "chin", over: ["question"], tilt: -4 },
+  chin:      { eyes: "open", mouth: "cat", arms: "chin", tilt: -6 },
+  type:      { eyes: "down", mouth: "smile", arms: "type", front: ["laptop"] },
+  typeL:     { eyes: "down", mouth: "smile", arms: "typeL", front: ["laptop"], tilt: -2 },
+  typeR:     { eyes: "down", mouth: "smile", arms: "typeR", front: ["laptop"], tilt: 2 },
+  wait:      { eyes: "big", mouth: "open", arms: "up", over: ["bang"], scale: 1.12 },
+  star:      { eyes: "star", mouth: "grin", arms: "up", over: ["sparkles"], lift: 18 },
+  proud:     { eyes: "happy", mouth: "cat", arms: "down", over: ["sparkles"], cheek: true },
+  huh:       { eyes: "big", mouth: "o", arms: "down", over: ["sweat"] },
+  dizzy:     { eyes: "spiral", mouth: "wavy", arms: "down", over: ["swirl", "sweat"], tilt: -8 },
+  bleh:      { eyes: "wink", mouth: "tongue", arms: "down", tilt: 6 },
+  pat:       { eyes: "closed", mouth: "cat", arms: "down", cheek: true, squash: .9 },
+  bliss:     { eyes: "happy", mouth: "smile", arms: "down", cheek: true, squash: .95 },
+  grin:      { eyes: "happy", mouth: "grin", arms: "down", cheek: true },
+  nuzzle:    { eyes: "closed", mouth: "cat", arms: "cheeks", cheek: true, tilt: -12 },
+  surprised: { eyes: "big", mouth: "o", arms: "up", over: ["bang"] },
+  blush:     { eyes: "flat", mouth: "wavy", arms: "cheeks", strongCheek: true },
+  heart:     { eyes: "happy", mouth: "open", arms: "heart", front: ["heartBig"], over: ["hearts"], cheek: true },
+  poke:      { eyes: "wink", mouth: "grin", arms: "down", tilt: 5 },
+  pout:      { eyes: "angry", mouth: "pout", arms: "down", over: ["anger"], cheek: true, puff: true },
+  sleepy:    { eyes: "flat", mouth: "o", arms: "down", over: ["zzz"], squash: .96, tilt: -5 },
+  cheer:     { eyes: "happy", mouth: "open", arms: "up", over: ["sparkles"], lift: 14 },
+  tea:       { eyes: "happy", mouth: "smile", arms: "tea", front: ["tea"], cheek: true },
+  sad:       { eyes: "closed", mouth: "wavy", arms: "down", front: ["tears"] },
+};
+
+function draw(name) {
+  const f = FRAMES[name];
+  const squash = f.squash || 1, tilt = f.tilt || 0, lift = f.lift || 0, scale = f.scale || 1;
+  const rx = 128 * (f.puff ? 1.04 : 1), ry = 112;
+  const body = `
+    <ellipse cx="200" cy="378" rx="96" ry="12" fill="#000" opacity=".12"/>
+    <g transform="translate(0 ${-lift}) translate(200 372) scale(${scale} ${squash * scale}) rotate(${tilt}) translate(-200 -372)">
+      <path d="M200 132 C204 112 206 100 212 88" stroke="${MINT2}" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M210 92 C230 70 262 72 266 84 C252 102 226 104 210 92Z" fill="${MINT}" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M208 96 C190 76 160 80 158 92 C172 108 196 106 208 96Z" fill="${MINT}" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+      <ellipse cx="200" cy="${370 - ry}" rx="${rx}" ry="${ry}" fill="${BODY}" stroke="${INK}" stroke-width="8"/>
+      <clipPath id="belly"><ellipse cx="200" cy="${370 - ry}" rx="${rx - 4}" ry="${ry - 4}"/></clipPath>
+      <path clip-path="url(#belly)" d="M${200 - rx + 30} ${330} Q200 ${384} ${200 + rx - 30} ${330}" stroke="${SHADE}" stroke-width="14" fill="none" opacity=".7" stroke-linecap="round"/>
+      ${f.cheek || f.strongCheek ? cheeks(f.strongCheek) : ""}
+      ${eyes(f.eyes)}
+      ${mouth(f.mouth)}
+      ${(f.front || []).map(k => extras[k]).join("")}
+      ${arms(f.arms)}
+    </g>
+    ${(f.over || []).map(k => extras[k]).join("")}`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="768" height="768">${body}</svg>`;
+}
+
+window.FRAME_NAMES = Object.keys(FRAMES);
+window.show = name => { document.getElementById("s").innerHTML = draw(name); };
+window.svgOf = draw;
+</script></body></html>

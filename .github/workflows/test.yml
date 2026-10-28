@@ -1,0 +1,11 @@
+name: test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: 单元测试
+        run: swift test
+      - name: 编译程序
+        run: swift build -c release --product Hebiu

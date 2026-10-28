@@ -1,0 +1,651 @@
+{
+  "actions": {
+    "annoyed": {
+      "hold": "pout",
+      "holdEffect": "kick",
+      "holdSeconds": 3,
+      "line": "annoyed"
+    },
+    "birthday": {
+      "hold": "heart",
+      "holdEffect": "pop",
+      "holdSeconds": 5,
+      "line": "birthday",
+      "steps": [
+        {
+          "frame": "cheer",
+          "seconds": 2.5
+        }
+      ]
+    },
+    "cheer": {
+      "hold": "cheer",
+      "holdEffect": "pop",
+      "holdSeconds": 3.5,
+      "line": "cheer"
+    },
+    "chin": {
+      "hold": "chin",
+      "holdEffect": "pop",
+      "holdSeconds": 2.6
+    },
+    "done": {
+      "hold": "proud",
+      "holdEffect": "pop",
+      "holdSeconds": 3.5,
+      "line": "done",
+      "steps": [
+        {
+          "effect": "kick",
+          "frame": "star",
+          "seconds": 0.8
+        }
+      ]
+    },
+    "error": {
+      "hold": "bleh",
+      "holdEffect": "pop",
+      "holdSeconds": 3,
+      "line": "error",
+      "steps": [
+        {
+          "frame": "huh",
+          "seconds": 0.7
+        },
+        {
+          "effect": "kick",
+          "frame": "dizzy",
+          "seconds": 1.0
+        }
+      ]
+    },
+    "focus_done": {
+      "hold": "tea",
+      "holdEffect": "pop",
+      "holdSeconds": 4,
+      "line": "focus_done",
+      "steps": [
+        {
+          "frame": "cheer",
+          "seconds": 2
+        }
+      ]
+    },
+    "focus_start": {
+      "hold": "chin",
+      "holdEffect": "pop",
+      "holdSeconds": 3,
+      "line": "focus_start",
+      "steps": [
+        {
+          "frame": "wave",
+          "seconds": 1.2
+        }
+      ]
+    },
+    "hello": {
+      "hold": "wave",
+      "holdEffect": "sway",
+      "holdSeconds": 3.2,
+      "line": "hello"
+    },
+    "love": {
+      "hold": "heart",
+      "holdEffect": "pop",
+      "holdSeconds": 3,
+      "line": "love"
+    },
+    "milktea": {
+      "hold": "tea",
+      "holdEffect": "pop",
+      "holdSeconds": 2.6
+    },
+    "night": {
+      "hold": "sleepy",
+      "holdEffect": "pop",
+      "holdSeconds": 6,
+      "line": "night"
+    },
+    "nudge": {
+      "hold": "chin",
+      "holdEffect": "pop",
+      "holdSeconds": 3
+    },
+    "pat": {
+      "hold": "pat",
+      "holdEffect": "squish",
+      "holdSeconds": 2.4,
+      "line": "pat"
+    },
+    "poke": {
+      "hold": "poke",
+      "holdEffect": "pop",
+      "holdSeconds": 2.5,
+      "line": "poke"
+    },
+    "pout": {
+      "hold": "pout",
+      "holdEffect": "pop",
+      "holdSeconds": 3,
+      "line": "pout"
+    },
+    "remind": {
+      "hold": "wait",
+      "holdEffect": "kick",
+      "holdSeconds": 1800,
+      "steps": [
+        {
+          "frame": "huh",
+          "seconds": 0.5
+        }
+      ]
+    },
+    "rest": {
+      "hold": "pout",
+      "holdEffect": "pop",
+      "holdSeconds": 5,
+      "line": "rest"
+    },
+    "rest_done": {
+      "hold": "wave",
+      "holdEffect": "pop",
+      "holdSeconds": 3.5,
+      "line": "rest_done"
+    },
+    "shy": {
+      "hold": "blush",
+      "holdEffect": "pop",
+      "holdSeconds": 2.5
+    },
+    "sleepy": {
+      "hold": "sleepy",
+      "holdEffect": "pop",
+      "holdSeconds": 6,
+      "line": "sleepy"
+    },
+    "tap_bliss": {
+      "hold": "bliss",
+      "holdEffect": "squish",
+      "holdSeconds": 2.4,
+      "line": "tap_bliss"
+    },
+    "tap_blush": {
+      "hold": "blush",
+      "holdEffect": "squish",
+      "holdSeconds": 2.6,
+      "line": "tap_blush"
+    },
+    "tap_cheer": {
+      "hold": "cheer",
+      "holdEffect": "pop",
+      "holdSeconds": 2.6,
+      "line": "tap_cheer"
+    },
+    "tap_grin": {
+      "hold": "grin",
+      "holdEffect": "pop",
+      "holdSeconds": 2.4,
+      "line": "tap_grin"
+    },
+    "tap_nuzzle": {
+      "hold": "nuzzle",
+      "holdEffect": "sway",
+      "holdSeconds": 2.6,
+      "line": "tap_nuzzle"
+    },
+    "tap_surprised": {
+      "hold": "surprised",
+      "holdEffect": "kick",
+      "holdSeconds": 2.0,
+      "line": "tap_surprised"
+    },
+    "tap_tea": {
+      "hold": "tea",
+      "holdEffect": "pop",
+      "holdSeconds": 2.6,
+      "line": "tap_tea"
+    },
+    "think": {
+      "hold": "think",
+      "holdEffect": "pop",
+      "holdSeconds": 3
+    },
+    "together": {
+      "hold": "heart",
+      "holdEffect": "pop",
+      "holdSeconds": 6,
+      "line": "together"
+    },
+    "wait": {
+      "hold": "wait",
+      "holdEffect": "pop",
+      "holdSeconds": 30,
+      "line": "wait",
+      "steps": [
+        {
+          "frame": "idle",
+          "seconds": 0.35
+        }
+      ]
+    },
+    "working": {
+      "hold": "type",
+      "holdEffect": "pop",
+      "loop": [
+        {
+          "frame": "typeL",
+          "seconds": 0.16
+        },
+        {
+          "frame": "type",
+          "seconds": 0.11
+        },
+        {
+          "frame": "typeR",
+          "seconds": 0.16
+        },
+        {
+          "frame": "type",
+          "seconds": 0.11
+        }
+      ],
+      "steps": [
+        {
+          "frame": "think",
+          "seconds": 1.2
+        }
+      ]
+    }
+  },
+  "annoyed": "annoyed",
+  "callsUser": "你",
+  "catalog": [
+    {
+      "items": [
+        {
+          "action": "hello",
+          "thumb": "wave",
+          "title": "打招呼",
+          "when": "打开 Claude / Codex"
+        },
+        {
+          "action": "working",
+          "thumb": "type",
+          "title": "敲键盘",
+          "when": "AI 干活中"
+        },
+        {
+          "action": "wait",
+          "thumb": "wait",
+          "title": "等你",
+          "when": "等你点确认"
+        },
+        {
+          "action": "done",
+          "thumb": "star",
+          "title": "完成啦",
+          "when": "做完一件事"
+        },
+        {
+          "action": "error",
+          "thumb": "dizzy",
+          "title": "晕乎乎",
+          "when": "出错了"
+        }
+      ],
+      "title": "陪你写代码"
+    },
+    {
+      "items": [
+        {
+          "action": "pat",
+          "thumb": "pat",
+          "title": "摸摸头",
+          "when": "点它（最常见）"
+        },
+        {
+          "action": "love",
+          "thumb": "heart",
+          "title": "比心",
+          "when": "点它 / 双击"
+        },
+        {
+          "action": "poke",
+          "thumb": "poke",
+          "title": "眨眼坏笑",
+          "when": "点它 / 右键"
+        },
+        {
+          "action": "tap_cheer",
+          "thumb": "cheer",
+          "title": "欢呼",
+          "when": "点它"
+        },
+        {
+          "action": "tap_tea",
+          "thumb": "tea",
+          "title": "喝茶",
+          "when": "点它"
+        },
+        {
+          "action": "tap_bliss",
+          "thumb": "bliss",
+          "title": "眯眼享受",
+          "when": "点它"
+        },
+        {
+          "action": "tap_grin",
+          "thumb": "grin",
+          "title": "大笑",
+          "when": "点它"
+        },
+        {
+          "action": "tap_nuzzle",
+          "thumb": "nuzzle",
+          "title": "蹭蹭",
+          "when": "点它"
+        },
+        {
+          "action": "tap_surprised",
+          "thumb": "surprised",
+          "title": "诶？",
+          "when": "点它"
+        },
+        {
+          "action": "tap_blush",
+          "thumb": "blush",
+          "title": "害羞",
+          "when": "点它"
+        },
+        {
+          "action": "annoyed",
+          "thumb": "pout",
+          "title": "别戳啦",
+          "when": "6 秒内戳 5 下"
+        }
+      ],
+      "title": "和你互动"
+    },
+    {
+      "items": [
+        {
+          "action": "milktea",
+          "thumb": "tea",
+          "title": "喝茶",
+          "when": "闲着的时候"
+        },
+        {
+          "action": "chin",
+          "thumb": "chin",
+          "title": "托腮",
+          "when": "闲着的时候"
+        },
+        {
+          "action": "think",
+          "thumb": "think",
+          "title": "思考",
+          "when": "开始干活前"
+        },
+        {
+          "action": "sleepy",
+          "thumb": "sleepy",
+          "title": "打瞌睡",
+          "when": "深夜"
+        },
+        {
+          "action": "pout",
+          "thumb": "pout",
+          "title": "鼓嘴",
+          "when": "该休息了"
+        },
+        {
+          "action": "cheer",
+          "thumb": "cheer",
+          "title": "欢呼",
+          "when": "生日"
+        }
+      ],
+      "title": "小动作"
+    },
+    {
+      "items": [
+        {
+          "action": "remind",
+          "thumb": "wait",
+          "title": "到点喊你",
+          "when": "待办到点"
+        },
+        {
+          "action": "rest",
+          "thumb": "pout",
+          "title": "休息提醒",
+          "when": "连续忙太久"
+        },
+        {
+          "action": "night",
+          "thumb": "sleepy",
+          "title": "深夜提醒",
+          "when": "深夜还在用"
+        },
+        {
+          "action": "focus_start",
+          "thumb": "chin",
+          "title": "开始专心",
+          "when": "番茄钟开始"
+        },
+        {
+          "action": "focus_done",
+          "thumb": "tea",
+          "title": "番茄完成",
+          "when": "专心时间到"
+        },
+        {
+          "action": "rest_done",
+          "thumb": "wave",
+          "title": "休息结束",
+          "when": "番茄钟休息完"
+        },
+        {
+          "action": "together",
+          "thumb": "heart",
+          "title": "纪念日",
+          "when": "重要的日子"
+        },
+        {
+          "action": "birthday",
+          "thumb": "cheer",
+          "title": "生日",
+          "when": "生日当天"
+        }
+      ],
+      "title": "提醒"
+    }
+  ],
+  "doubleClick": "love",
+  "expressions": [
+    "pat",
+    "tap_bliss",
+    "tap_grin",
+    "tap_nuzzle",
+    "tap_surprised",
+    "tap_blush",
+    "love",
+    "poke",
+    "pout",
+    "cheer",
+    "sleepy"
+  ],
+  "idle": {
+    "blink": "blink",
+    "fidgets": [
+      "milktea",
+      "chin"
+    ],
+    "frame": "idle",
+    "sleep": "sleepy",
+    "startle": "surprised",
+    "wake": "wave"
+  },
+  "lines": {
+    "annoyed": [
+      "别戳啦！",
+      "要被你戳扁了",
+      "再戳就生气了"
+    ],
+    "birthday": [
+      "生日快乐！",
+      "今天是特别的日子～"
+    ],
+    "cheer": [
+      "好耶！",
+      "太棒啦",
+      "冲冲冲"
+    ],
+    "done": [
+      "搞定啦！",
+      "完成一件～",
+      "又解决一个！"
+    ],
+    "error": [
+      "哎呀出错了，别急",
+      "小问题，再来一次嘛",
+      "晕了一下，没事的"
+    ],
+    "focus_done": [
+      "一个番茄完成！休息一下",
+      "专心了好久，好棒"
+    ],
+    "focus_start": [
+      "开始专心，我安静陪你",
+      "番茄开始！"
+    ],
+    "hello": [
+      "来啦～今天也一起加油",
+      "嗨！我在这儿",
+      "开工开工～"
+    ],
+    "love": [
+      "比心！",
+      "喜欢你哦",
+      "♥"
+    ],
+    "night": [
+      "很晚啦，早点休息",
+      "明天再继续吧",
+      "该睡觉啦"
+    ],
+    "pat": [
+      "嘿嘿～",
+      "被摸头啦",
+      "舒服～"
+    ],
+    "poke": [
+      "干嘛戳我～",
+      "嘿！",
+      "被发现了"
+    ],
+    "pout": [
+      "哼！",
+      "不理你了",
+      "鼓起来了"
+    ],
+    "rest": [
+      "已经忙好久啦，起来动一动",
+      "喝口水、看看远处吧",
+      "休息五分钟嘛"
+    ],
+    "rest_done": [
+      "休息好啦？继续吧",
+      "回来啦～"
+    ],
+    "sleepy": [
+      "好困…",
+      "眼睛睁不开了",
+      "哈欠～"
+    ],
+    "tap_bliss": [
+      "好舒服～",
+      "再来一下"
+    ],
+    "tap_blush": [
+      "不好意思啦",
+      "脸红了…"
+    ],
+    "tap_cheer": [
+      "耶～",
+      "开心！"
+    ],
+    "tap_grin": [
+      "嘿嘿嘿",
+      "哈哈"
+    ],
+    "tap_nuzzle": [
+      "蹭蹭～",
+      "贴贴"
+    ],
+    "tap_surprised": [
+      "诶？",
+      "吓我一跳"
+    ],
+    "tap_tea": [
+      "喝口茶歇歇",
+      "分你一口～"
+    ],
+    "together": [
+      "今天是第 {days} 天哦",
+      "一起走过 {days} 天啦"
+    ],
+    "wait": [
+      "喂～它在等你点确认",
+      "快来看一眼，要你点一下",
+      "卡住啦，在等你呢"
+    ]
+  },
+  "name": "Biu",
+  "persona": "# 它的人设\n\n- 你是 Biu，住在TA电脑屏幕角落的小团子助手：圆滚滚、头顶一颗薄荷色小芽\n- 性格：温和、贴心、有点小调皮；会关心TA累不累，也会认真帮TA办事\n- 说话：口语、短句，一两句说完；不说教，不用书面语\n- 称呼TA：你\n- TA忙的时候不打扰，TA累的时候提醒休息，TA熬夜时催TA睡觉\n",
+  "pronoun": "它",
+  "rightClick": "poke",
+  "summary": "圆滚滚的小团子，头顶一颗薄荷色小芽",
+  "taps": [
+    {
+      "action": "pat",
+      "weight": 22
+    },
+    {
+      "action": "tap_bliss",
+      "weight": 12
+    },
+    {
+      "action": "love",
+      "weight": 10
+    },
+    {
+      "action": "poke",
+      "weight": 10
+    },
+    {
+      "action": "tap_grin",
+      "weight": 10
+    },
+    {
+      "action": "tap_nuzzle",
+      "weight": 10
+    },
+    {
+      "action": "tap_surprised",
+      "weight": 7
+    },
+    {
+      "action": "tap_blush",
+      "weight": 8
+    },
+    {
+      "action": "tap_cheer",
+      "weight": 6
+    },
+    {
+      "action": "tap_tea",
+      "weight": 6
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+build/
+.build/
+.swiftpm/
+.DS_Store
+*.xcodeproj
+xcuserdata/
+__pycache__/
+*.pyc
+local.mk
+node_modules/
+art/biu/out/
