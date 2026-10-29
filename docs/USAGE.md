@@ -182,6 +182,7 @@ hebiu help
 | `Tests/HebiuKitTests/` | 单元测试（`make test`，不碰 `~/.hebiu`） |
 | `Resources/characters/` | 自带的形象包 |
 | `art/biu/` | 默认形象 Biu 的画法（SVG 生成，`make art` 重画） |
+| `art/ai/` | 用本地 AI 模型生成自己的形象：生图、抠绿幕、成对帧、导出（见 [art/ai/README.md](../art/ai/README.md)） |
 | `art/readme/` | README 里的 logo、示意图、表情图（`node art/readme/render.mjs` 重新出图） |
 | `icon/` | App 图标（`make icon` 从形象的一帧生成） |
 | `datasources/` | 数据来源脚本（`make install` 时装进 `~/.hebiu/sources/`） |

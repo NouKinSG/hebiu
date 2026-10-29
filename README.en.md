@@ -83,7 +83,9 @@ The default character Biu has 27 frames, all drawn in code ([art/biu](art/biu)) 
 cp -r Resources/characters/default ~/.hebiu/characters/mine
 ```
 
-Replace the images in `frames/` (keep the file names and the action table still works), edit the name, pronoun, persona and lines in `character.json`, then pick `mine` in Settings → 形象. The format and when each action fires: [docs/CHARACTERS.md](docs/CHARACTERS.md). PRs adding characters to `Resources/characters/` are welcome.
+Replace the images in `frames/` (keep the file names and the action table still works), edit the name, pronoun, persona and lines in `character.json`, then pick `mine` in Settings → 形象. The format and when each action fires: [docs/CHARACTERS.md](docs/CHARACTERS.md). PRs adding hand-drawn characters to `Resources/characters/` are welcome.
+
+Can't draw? **Turn a photo or a description into a character with a local AI model** — generation, green-screen keying and export to a character pack, all on your Mac. Steps, prompts and the model licence: [art/ai](art/ai/README.md) (Chinese).
 
 ## FAQ
 

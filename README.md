@@ -83,7 +83,9 @@ cp -r Resources/characters/default ~/.hebiu/characters/mine
 
 把 `frames/` 里的图换成你的（文件名不变就不用改动作表），改 `character.json` 里的名字、称呼、人设和台词，然后在「设置 → 形象」里选 `mine`。格式说明和每个动作什么时候触发，见 [docs/CHARACTERS.md](docs/CHARACTERS.md)。
 
-做好了想分享，欢迎提 PR 放进 `Resources/characters/`。
+不会画画？可以**用 AI 把照片或一句描述变成形象**：本地模型出图、自动抠图、导出成形象包，全程在本机跑。步骤、提示词和要注意的许可见 [art/ai](art/ai/README.md)。
+
+自己画的形象欢迎提 PR 放进 `Resources/characters/`。
 
 ## 常见问题
 

@@ -26,7 +26,7 @@ make help          # 全部命令
 
 ## 分享形象
 
-做好的形象包放进 `Resources/characters/<名字>/`，跑一遍 `make test`（会检查动作表用到的帧都在），然后提 PR。请确认图片是你自己画的或者有权公开。格式见 [docs/CHARACTERS.md](docs/CHARACTERS.md)。
+做好的形象包放进 `Resources/characters/<名字>/`，跑一遍 `make test`（会检查动作表用到的帧都在），然后提 PR。请确认图片是你自己画的或者有权公开。用 AI 生成的形象（[art/ai](art/ai/README.md)）受模型许可限制，不能并进 MIT 的仓库，单独分享就好。格式见 [docs/CHARACTERS.md](docs/CHARACTERS.md)。
 
 ## 报 bug
 

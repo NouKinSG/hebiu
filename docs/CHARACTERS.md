@@ -27,6 +27,7 @@
 - 所有帧的角色大小、位置要一致，否则换帧时会跳
 - 用到哪些帧由动作表决定，名字随便起；少了的帧会用 `idle` 顶上，启动日志里会列出缺了哪些（`~/.hebiu/hebiu.log`）
 - Biu 是用代码画的，想照着画一个：见 [art/biu/README.md](../art/biu/README.md)
+- 不会画画：用本地 AI 模型从照片或描述生成，再自动抠图导出，见 [art/ai/README.md](../art/ai/README.md)
 
 ## character.json
 
