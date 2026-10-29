@@ -287,7 +287,9 @@ final class BubbleView: NSView {
     required init?(coder: NSCoder) { fatalError() }
 
     private func layoutBubble() {
-        let width = max(60, min(200 * TypographySettings.shared.scale, (superview?.bounds.width ?? 330) - padding.width * 2 - 8))
+        let scaledWidth: CGFloat = 200 * CGFloat(TypographySettings.shared.scale)
+        let availableWidth: CGFloat = (superview?.bounds.width ?? 330) - padding.width * 2 - 8
+        let width: CGFloat = max(60, min(scaledWidth, availableWidth))
         label.preferredMaxLayoutWidth = width
         let size = label.sizeThatFits(NSSize(width: width, height: 240))
         let w = ceil(size.width) + padding.width * 2, h = ceil(size.height) + padding.height * 2
