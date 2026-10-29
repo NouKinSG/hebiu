@@ -1,6 +1,7 @@
 import HebiuKit
 import AppKit
 import QuartzCore
+import Combine
 
 /// 透明、置顶、不抢焦点的小窗口
 final class PetPanel: NSPanel {
@@ -261,6 +262,7 @@ final class PetView: NSView {
 final class BubbleView: NSView {
     private let label = NSTextField(labelWithString: "")
     private var hideWork: DispatchWorkItem?
+    private var fontSubscription: AnyCancellable?
     var anchor = NSPoint.zero        // 气泡尾巴指向的位置（她的头顶附近）
     private let padding = NSSize(width: 14, height: 9)
     private let tail: CGFloat = 8
@@ -269,25 +271,38 @@ final class BubbleView: NSView {
         super.init(frame: frame)
         wantsLayer = true
         alphaValue = 0
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = TypographySettings.shared.nsFont(size: 13, weight: .semibold)
         label.textColor = NSColor(calibratedRed: 0.16, green: 0.13, blue: 0.19, alpha: 1)
         label.maximumNumberOfLines = 3
         label.lineBreakMode = .byWordWrapping
         label.preferredMaxLayoutWidth = 200
         addSubview(label)
+        fontSubscription = TypographySettings.shared.objectWillChange.sink { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.label.font = TypographySettings.shared.nsFont(size: 13, weight: .semibold)
+                self?.layoutBubble()
+            }
+        }
     }
     required init?(coder: NSCoder) { fatalError() }
+
+    private func layoutBubble() {
+        let width = max(60, min(200 * TypographySettings.shared.scale, (superview?.bounds.width ?? 330) - padding.width * 2 - 8))
+        label.preferredMaxLayoutWidth = width
+        let size = label.sizeThatFits(NSSize(width: width, height: 240))
+        let w = ceil(size.width) + padding.width * 2, h = ceil(size.height) + padding.height * 2
+        var x = anchor.x - w + 26
+        if let sv = superview { x = max(4, min(x, sv.bounds.width - w - 4)) }
+        let y = min(anchor.y, max(0, (superview?.bounds.height ?? 400) - h - tail))
+        frame = NSRect(x: x, y: y, width: w, height: h + tail)
+        label.frame = NSRect(x: padding.width, y: tail + padding.height, width: ceil(size.width), height: ceil(size.height))
+        needsDisplay = true
+    }
 
     /// seconds 为 nil：一直显示，直到 hide() 或下一次 show()
     func show(_ text: String, seconds: Double? = 3.6) {
         label.stringValue = text
-        let size = label.sizeThatFits(NSSize(width: 200, height: 200))
-        let w = ceil(size.width) + padding.width * 2, h = ceil(size.height) + padding.height * 2
-        var x = anchor.x - w + 26
-        if let sv = superview { x = max(4, min(x, sv.bounds.width - w - 4)) }
-        frame = NSRect(x: x, y: anchor.y, width: w, height: h + tail)
-        label.frame = NSRect(x: padding.width, y: tail + padding.height, width: ceil(size.width), height: ceil(size.height))
-        needsDisplay = true
+        layoutBubble()
         NSAnimationContext.runAnimationGroup { $0.duration = 0.2; animator().alphaValue = 1 }
         hideWork?.cancel()
         guard let seconds else { return }

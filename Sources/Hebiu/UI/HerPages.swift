@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 动作库：缩略图 + 名字 + 什么时候出现，点一下她就做
 struct ActionsPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
     @State private var played: String?
     @State private var editing: String?
@@ -41,6 +42,7 @@ private struct EditingAction: Identifiable {
 }
 
 private struct ActionTile: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let action: ActionCatalog.Action
     let highlighted: Bool
     let onEdit: () -> Void
@@ -52,8 +54,8 @@ private struct ActionTile: View {
             VStack(spacing: 6) {
                 PetThumb(frame: action.thumb, size: 76)
                     .padding(.top, 6)
-                Text(action.title).font(.system(size: 13, weight: .semibold))
-                Text(action.when).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                Text(action.title).font(.hebiuSystem(size: 13, weight: .semibold))
+                Text(action.when).font(.hebiuStyle(.caption)).foregroundStyle(.secondary).lineLimit(1)
             }
             .frame(maxWidth: .infinity)
             .padding(.bottom, 10)
@@ -69,7 +71,7 @@ private struct ActionTile: View {
         .overlay(alignment: .topTrailing) {
             if hovering {
                 Button(action: onEdit) {
-                    Image(systemName: "pencil").font(.system(size: 11, weight: .semibold))
+                    Image(systemName: "pencil").font(.hebiuSystem(size: 11, weight: .semibold))
                         .frame(width: 24, height: 24)
                         .background(Circle().fill(Color(nsColor: .windowBackgroundColor)))
                         .overlay(Circle().stroke(Color(nsColor: .separatorColor)))
@@ -84,6 +86,7 @@ private struct ActionTile: View {
 
 /// 台词：左边选事件，右边一行一句
 struct LinesPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
     @State private var selected = "hello"
 
@@ -113,17 +116,17 @@ struct LinesPage: View {
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(alignment: .firstTextBaseline) {
                             Text(e.name).font(.title3.weight(.semibold))
-                            Text(e.when).font(.callout).foregroundStyle(.secondary)
+                            Text(e.when).font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         }
                         TextEditor(text: Binding(get: { model.lines[e.key] ?? "" }, set: { model.lines[e.key] = $0 }))
-                            .font(.system(size: 14))
+                            .font(.hebiuSystem(size: 14))
                             .scrollContentBackground(.hidden)
                             .padding(10)
                             .frame(minHeight: 220)
                             .background(RoundedRectangle(cornerRadius: Theme.radius).fill(Color(nsColor: .textBackgroundColor)))
                             .overlay(RoundedRectangle(cornerRadius: Theme.radius).stroke(Color(nsColor: .separatorColor).opacity(0.6)))
                         Text(e.key == "together" ? "{days} 会换成在一起的天数。全删空就用默认台词。" : "全删空就用默认台词。改完自动保存。")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                         HStack {
                             Button("恢复默认") { model.resetLines(e.key) }
                             Spacer()
@@ -138,6 +141,7 @@ struct LinesPage: View {
 
 /// 我们：在一起第几天、纪念日、生日
 struct UsPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
 
     var body: some View {
@@ -147,19 +151,19 @@ struct UsPage: View {
                     PetThumb(frame: "heart", size: 96)
                     if let days = model.daysTogether {
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("在一起").font(.callout).foregroundStyle(.secondary)
+                            Text("在一起").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                             HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 Text("第").foregroundStyle(.secondary)
-                                Text("\(days)").font(.system(size: 48, weight: .heavy, design: .rounded))
+                                Text("\(days)").font(.hebiuSystem(size: 48, weight: .heavy, design: .rounded))
                                     .foregroundStyle(Theme.accent).monospacedDigit()
                                 Text("天").foregroundStyle(.secondary)
                             }
-                            if let next = nextHundred(days) { Text(next).font(.caption).foregroundStyle(.secondary) }
+                            if let next = nextHundred(days) { Text(next).font(.hebiuStyle(.caption)).foregroundStyle(.secondary) }
                         }
                     } else {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("还没填在一起的日子").font(.headline)
-                            Text("在下面填上，这里会显示第几天").font(.callout).foregroundStyle(.secondary)
+                            Text("还没填在一起的日子").font(.hebiuStyle(.headline))
+                            Text("在下面填上，这里会显示第几天").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         }
                     }
                     Spacer()
@@ -255,6 +259,7 @@ enum MonthDay {
 
 /// 重要日子：倒数、提前提醒；一行字加一个，支持农历
 struct DatesSection: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
     @State private var draft = ""
     @State private var hint: String?
@@ -267,7 +272,7 @@ struct DatesSection: View {
                     let list = model.allDates
                     if list.isEmpty {
                         Text("还没有。比如加上「妈妈生日 农历八月十五」「第一次约会 2024年5月20日」")
-                            .font(.callout).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.hebiuStyle(.callout)).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     }
                     ForEach(Array(list.enumerated()), id: \.element.date.id) { i, item in
                         if i > 0 { Divider() }
@@ -281,10 +286,10 @@ struct DatesSection: View {
                         Button("加上", action: add).controlSize(.small).disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
                     if let hint {
-                        Text(hint).font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                        Text(hint).font(.hebiuStyle(.caption)).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                     } else if let p = ImportantDate.parse(draft) {
                         Label("\(p.title) · \(p.dateText)" + (p.daysUntil(from: Date()).map { $0 == 0 ? " · 就是今天" : " · 还有 \($0) 天" } ?? ""),
-                              systemImage: "calendar").font(.caption).foregroundStyle(Theme.accent)
+                              systemImage: "calendar").font(.hebiuStyle(.caption)).foregroundStyle(Theme.accent)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -300,6 +305,7 @@ struct DatesSection: View {
 }
 
 private struct DateRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let date: ImportantDate
     let days: Int
     let onDelete: () -> Void
@@ -308,21 +314,21 @@ private struct DateRow: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(date.title)
-                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+                Text(subtitle).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
             }
             Spacer()
             if days == 0 {
-                Text("就是今天").font(.system(size: 15, weight: .bold)).foregroundStyle(Theme.accent)
+                Text("就是今天").font(.hebiuSystem(size: 15, weight: .bold)).foregroundStyle(Theme.accent)
             } else {
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text("还有").font(.caption).foregroundStyle(.secondary)
-                    Text("\(days)").font(.system(size: 20, weight: .bold, design: .rounded)).monospacedDigit()
+                    Text("还有").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
+                    Text("\(days)").font(.hebiuSystem(size: 20, weight: .bold, design: .rounded)).monospacedDigit()
                         .foregroundStyle(days <= 7 ? Theme.accent : Color.primary)
-                    Text("天").font(.caption).foregroundStyle(.secondary)
+                    Text("天").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                 }
             }
             if date.isBuiltIn {
-                Image(systemName: "lock").font(.system(size: 11)).foregroundStyle(.tertiary).help("在上面「在一起的日子」「\(Her.she)的生日」里改")
+                Image(systemName: "lock").font(.hebiuSystem(size: 11)).foregroundStyle(.tertiary).help("在上面「在一起的日子」「\(Her.she)的生日」里改")
             } else {
                 Button(action: onDelete) { Image(systemName: "trash") }.buttonStyle(.borderless).foregroundStyle(.secondary)
             }

@@ -4,6 +4,7 @@ import SwiftUI
 
 /// 数据来源：每个来源一张卡，开关、同步间隔、上次结果
 struct SourcesPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
 
     var body: some View {
@@ -13,13 +14,14 @@ struct SourcesPage: View {
             }
             .id(model.sourceTick)
             Text("自己写来源：任何语言写个脚本放进 ~/.hebiu/sources/，打印 JSON 就行，写法见项目里的 docs/SOURCES.md。关掉一个来源时，它带进来、还没完成的待办会一起清掉。")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                 .padding(.horizontal, 4)
         }
     }
 }
 
 private struct SourceCard: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
     let source: (name: String, title: String, detail: String, installed: Bool)
 
@@ -34,14 +36,14 @@ private struct SourceCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 12) {
                     Image(systemName: icon)
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.hebiuSystem(size: 16, weight: .medium))
                         .foregroundStyle(minutes > 0 ? Theme.accent : Color.secondary)
                         .frame(width: 34, height: 34)
                         .background(RoundedRectangle(cornerRadius: 8).fill((minutes > 0 ? Theme.accent : Color.secondary).opacity(0.12)))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(source.title).font(.system(size: 14, weight: .semibold))
+                        Text(source.title).font(.hebiuSystem(size: 14, weight: .semibold))
                         Text(source.installed ? source.detail : "脚本没装：在项目目录运行 make install 会装上")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     }
                     Spacer()
                     Toggle("", isOn: Binding(get: { minutes > 0 }, set: { model.setSource(source.name, on: $0) }))
@@ -52,12 +54,12 @@ private struct SourceCard: View {
                     Divider()
                     HStack(spacing: 10) {
                         Circle().fill(status.error == nil ? Color.green : Theme.overdue).frame(width: 7, height: 7)
-                        Text(statusText(status)).font(.caption)
+                        Text(statusText(status)).font(.hebiuStyle(.caption))
                             .foregroundStyle(status.error == nil ? Color.secondary : Theme.overdue).lineLimit(2)
                         Spacer()
                         Stepper("每 \(minutes) 分钟", value: Binding(get: { minutes }, set: { model.sourceMinutes[source.name] = max(1, $0) }),
                                 in: 1...240, step: minutes < 10 ? 1 : 5)
-                            .font(.caption)
+                            .font(.hebiuStyle(.caption))
                             .fixedSize()
                         Button(status.running ? "同步中…" : "立即同步") { model.sync(source.name) }
                             .controlSize(.small)
@@ -77,6 +79,7 @@ private struct SourceCard: View {
 
 /// Claude Code：钩子接没接上、每种事件最近一次是什么时候
 struct ClaudePage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
     @State private var copied = false
 
@@ -98,9 +101,9 @@ struct ClaudePage: View {
                     HStack(spacing: 14) {
                         PetThumb(frame: last.map { context.date.timeIntervalSince($0) < 120 } == true ? "type" : "idle", size: 72)
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(last == nil ? "还没收到过 Claude Code / Codex 的动静" : "已连上").font(.headline)
+                            Text(last == nil ? "还没收到过 Claude Code / Codex 的动静" : "已连上").font(.hebiuStyle(.headline))
                             Text(last.map { "最近一次：\(ago($0, now: context.date))" } ?? "装好钩子后，新开一个 Claude Code 或 Codex 会话就会有反应")
-                                .font(.callout).foregroundStyle(.secondary)
+                                .font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         }
                         Spacer()
                     }
@@ -113,12 +116,12 @@ struct ClaudePage: View {
                             if index > 0 { Divider().padding(.leading, 16) }
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(Character.title(of: h.event)).font(.system(size: 13, weight: .medium))
-                                    Text("Claude：\(h.claude)" + (h.codex.map { "　Codex：\($0)" } ?? "")).font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary)
+                                    Text(Character.title(of: h.event)).font(.hebiuSystem(size: 13, weight: .medium))
+                                    Text("Claude：\(h.claude)" + (h.codex.map { "　Codex：\($0)" } ?? "")).font(.hebiuSystem(size: 11, design: .monospaced)).foregroundStyle(.secondary)
                                 }
                                 Spacer()
                                 Text(activity[h.event].map { ago($0, now: context.date) } ?? "还没收到")
-                                    .font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                                    .font(.hebiuStyle(.caption)).foregroundStyle(.secondary).monospacedDigit()
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
@@ -130,10 +133,10 @@ struct ClaudePage: View {
                 Card {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("在终端运行下面这行（Claude Code 里前面加 !）。装了哪个接哪个，只追加带 #hebiu 标记的钩子，已有的不动，改之前先备份。Codex 下次打开时会问要不要信任新钩子，选信任。")
-                            .font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                            .font(.hebiuStyle(.callout)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                         HStack {
                             Text(hookCommand)
-                                .font(.system(size: 12, design: .monospaced))
+                                .font(.hebiuSystem(size: 12, design: .monospaced))
                                 .textSelection(.enabled)
                                 .lineLimit(1).truncationMode(.middle)
                                 .padding(.horizontal, 10).padding(.vertical, 7)

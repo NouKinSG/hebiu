@@ -4,6 +4,7 @@ import SwiftUI
 
 /// 设置：只放「设一次就不管」的东西
 struct SettingsPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: SettingsModel
 
     private var showDetail: String {
@@ -16,6 +17,7 @@ struct SettingsPage: View {
 
     var body: some View {
         Page(title: "设置", subtitle: "改完自动保存") {
+            TypographySettingsSection()
             group("\(Her.she)在桌面上") {
                 SettingRow(title: "形象", detail: (model.characters.first { $0.id == model.character }?.summary).map { $0.isEmpty ? "自己做形象：看项目里的 docs/CHARACTERS.md" : $0 }) {
                     Picker("", selection: $model.character) {
@@ -45,7 +47,7 @@ struct SettingsPage: View {
                     }
                     .padding(.leading, 16)
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("不显示的时候，这些事也让\(Her.she)出来").font(.callout).foregroundStyle(.secondary)
+                        Text("不显示的时候，这些事也让\(Her.she)出来").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 8)], alignment: .leading, spacing: 6) {
                             ForEach(ShowIn.PopKind.allCases, id: \.self) { kind in
                                 Toggle(kind.title + (kind.waitsForClick ? "" : "（露几秒）"), isOn: Binding(
@@ -54,7 +56,7 @@ struct SettingsPage: View {
                                     .toggleStyle(.checkbox)
                             }
                         }
-                        Text("提醒类的会等你点\(Her.she)一下再回去").font(.caption).foregroundStyle(.secondary)
+                        Text("提醒类的会等你点\(Her.she)一下再回去").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     }
                     .padding(.leading, 16)
                 }
@@ -222,6 +224,7 @@ struct SettingsPage: View {
 
 /// 选 App：正开着的 + 已经选过的，带图标，可多选
 struct AppPicker: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @Binding var selected: Set<String>
 
     private struct App: Identifiable {
@@ -234,7 +237,7 @@ struct AppPicker: View {
         let apps = candidates()
         VStack(alignment: .leading, spacing: 6) {
             if selected.isEmpty {
-                Text("还没选：一个都不选时平时哪里都不显示，只在下面勾的事情发生时出来").font(.caption).foregroundStyle(Theme.overdue)
+                Text("还没选：一个都不选时平时哪里都不显示，只在下面勾的事情发生时出来").font(.hebiuStyle(.caption)).foregroundStyle(Theme.overdue)
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 170), spacing: 8)], alignment: .leading, spacing: 6) {
                 ForEach(apps) { app in
@@ -248,7 +251,7 @@ struct AppPicker: View {
                     .toggleStyle(.checkbox)
                 }
             }
-            Text("列表里是现在开着的 App；想要的没在里面，先把它打开再回来勾").font(.caption).foregroundStyle(.secondary)
+            Text("列表里是现在开着的 App；想要的没在里面，先把它打开再回来勾").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
         }
     }
 

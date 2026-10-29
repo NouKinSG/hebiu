@@ -11,3 +11,6 @@ jobs:
           swift test 2>&1 | tee test.log || { grep -E "✘|error:" test.log | head -30 | sed 's/^/::error::/'; exit 1; }
       - name: 编译程序
         run: swift build -c release --product Hebiu
+
+      - name: 专注核心与整合回归
+        run: bash scripts/test-focus.sh

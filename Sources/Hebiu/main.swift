@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
         taps = TapReactions(pool: Character.pack.taps.map { ($0.action, $0.weight) }, annoyed: Character.pack.annoyed)
     }
     let stats = Stats()
-    let focus = FocusSession()
+    let focus = IntegratedFocusController()
     let dates = ImportantDateStore()
     let habits = HabitStore()
     let notes = NoteStore()
@@ -151,6 +151,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
             return "\(w.emoji)今天 \(Int(w.today.min.rounded()))～\(Int(w.today.max.rounded()))°" + (w.advice.first.map { "，" + $0 } ?? "")
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in self?.checkDates() }
+        focus.breakMinutes = { [weak self] in self?.config.settings.breakMinutes ?? 0 }
+        focus.onEvent = { [weak self] event in
+            guard let self else { return }
+            switch event {
+            case .started:
+                self.play("focus_start")
+            case let .completed(session, recovered):
+                // Persist the session ID with the counter so replay cannot count it twice.
+                guard try self.stats.recordFocusCompletion(id: session.id, at: session.endedAt) else { return }
+                self.say("focus_done", recovered ? "刚才那轮专注已完成，记录已经保存。" : nil, sticky: true)
+                self.popOut(.focus)
+                if self.config.settings.notify {
+                    self.todos.notifier.post(title: "专注完成", body: "这一轮完成了，起来活动一下吧。")
+                }
+                self.main?.refreshHostState()
+            case .restDone:
+                self.play("rest_done")
+                self.popOut(.focus, seconds: 4)
+            }
+        }
+        let focusClock = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in self?.focusTick() }
+        RunLoop.main.add(focusClock, forMode: .common)
+        focusTimer = focusClock
         companion.isFocusing = { [weak self] in self?.focus.isFocusing ?? false }
         companion.start()
         inbox = EventInbox { [weak self] line in
@@ -514,41 +537,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
 
     func startFocus(minutes: Int? = nil) {
         focus.start(minutes: minutes ?? config.settings.focusMinutes)
-        play("focus_start")
-        focusTimer?.invalidate()
-        focusTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in self?.focusTick() }
-        focusTick()
     }
 
-    func stopFocus() {
-        focus.stop()
-        focusTick()
-    }
+    func stopFocus() { focus.stop() }
 
     private func focusTick() {
-        let transition = focus.tick(restMinutes: config.settings.breakMinutes)
-        switch transition {
-        case .focusDone:
-            stats.bump(.focus)
-            say("focus_done", nil, sticky: true)      // 挂着，回来看到
-            popOut(.focus)
-            if config.settings.notify { todos.notifier.post(title: "🍅 一个番茄完成", body: "起来动一动、喝口水～") }
-        case .restDone:
-            play("rest_done")
-            popOut(.focus, seconds: 4)
-        case nil:
-            break
-        }
-        let left = FocusSession.clock(focus.remaining())
-        switch focus.phase {
-        case .focus: statusItem.button?.title = " " + left
-        case .rest: statusItem.button?.title = " 休息 " + left
-        case .idle:
-            statusItem.button?.title = ""
-            focusTimer?.invalidate()
-            focusTimer = nil
-        }
-        if transition != nil { main?.refreshHostState() }
+        focus.tick()
+        statusItem.button?.title = focus.menuTitle
     }
 
     // MARK: - 菜单栏
@@ -564,6 +559,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
     }
 
     private func rebuildMenu() {
+        // A new data directory creates todo.json before setupStatusItem has run.
+        guard let statusItem else { return }
         statusItem.menu = buildMenu()
         main?.refreshHostState()
     }
@@ -888,6 +885,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
     }
 
     @objc private func quit() { NSApp.terminate(nil) }
+}
+
+if ProcessInfo.processInfo.environment["HEBIU_FOCUS_SELF_TEST"] == "1" {
+    MainActor.assumeIsolated { FocusIntegrationChecks.run() }
+    exit(0)
 }
 
 // 带参数就是命令行工具，做完就退出

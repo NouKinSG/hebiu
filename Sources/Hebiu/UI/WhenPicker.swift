@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 选时间：左边月历点一天，右边点一个钟点就选好了（「全天」只要日期）；也可以在下面直接写「周五下午三点」
 struct WhenPicker: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let initial: Date?
     let initialHasTime: Bool
     let onPick: ((date: Date, hasTime: Bool)) -> Void
@@ -47,11 +48,11 @@ struct WhenPicker: View {
 
     private var header: some View {
         HStack(spacing: 6) {
-            Text(monthTitle).font(.system(size: 15, weight: .semibold)).monospacedDigit()
+            Text(monthTitle).font(.hebiuSystem(size: 15, weight: .semibold)).monospacedDigit()
             Spacer()
             navButton("chevron.left") { shiftMonth(-1) }
             Button("今天") { month = Date(); day = cal.startOfDay(for: Date()) }
-                .buttonStyle(.plain).font(.system(size: 12)).foregroundStyle(Theme.accent)
+                .buttonStyle(.plain).font(.hebiuSystem(size: 12)).foregroundStyle(Theme.accent)
             navButton("chevron.right") { shiftMonth(1) }
         }
     }
@@ -59,7 +60,7 @@ struct WhenPicker: View {
     private var weekdays: some View {
         HStack(spacing: 0) {
             ForEach(["一", "二", "三", "四", "五", "六", "日"], id: \.self) { w in
-                Text(w).font(.system(size: 11)).foregroundStyle(.secondary).frame(maxWidth: .infinity)
+                Text(w).font(.hebiuSystem(size: 11)).foregroundStyle(.secondary).frame(maxWidth: .infinity)
             }
         }
     }
@@ -77,7 +78,7 @@ struct WhenPicker: View {
                     if !inMonth { month = d }
                 } label: {
                     Text("\(cal.component(.day, from: d))")
-                        .font(.system(size: 13, weight: selected || today ? .semibold : .regular))
+                        .font(.hebiuSystem(size: 13, weight: selected || today ? .semibold : .regular))
                         .monospacedDigit()
                         .foregroundStyle(selected ? Color.white : !inMonth || past ? Color.secondary.opacity(0.5) : today ? Theme.accent : Color.primary)
                         .frame(width: 32, height: 30)
@@ -108,7 +109,7 @@ struct WhenPicker: View {
 
     private func navButton(_ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon).font(.system(size: 11, weight: .semibold)).frame(width: 22, height: 22)
+            Image(systemName: icon).font(.hebiuSystem(size: 11, weight: .semibold)).frame(width: 22, height: 22)
                 .background(Circle().fill(Color.secondary.opacity(0.1)))
         }
         .buttonStyle(.plain)
@@ -153,7 +154,7 @@ struct WhenPicker: View {
     private func timeRow(_ text: String, id: String, selected: Bool, dim: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(text)
-                .font(.system(size: 13, weight: selected ? .semibold : .regular))
+                .font(.hebiuSystem(size: 13, weight: selected ? .semibold : .regular))
                 .monospacedDigit()
                 .foregroundStyle(selected ? Color.white : dim ? Color.secondary.opacity(0.6) : Color.primary)
                 .frame(maxWidth: .infinity)
@@ -169,9 +170,9 @@ struct WhenPicker: View {
 
     private var typeField: some View {
         HStack(spacing: 6) {
-            Image(systemName: "keyboard").font(.system(size: 11)).foregroundStyle(.secondary)
+            Image(systemName: "keyboard").font(.hebiuSystem(size: 11)).foregroundStyle(.secondary)
             TextField("或者直接写：周五下午三点", text: $typed)
-                .textFieldStyle(.plain).font(.system(size: 12))
+                .textFieldStyle(.plain).font(.hebiuSystem(size: 12))
                 .onSubmit {
                     if let p = TimeParser.parse(typed), let due = p.due {
                         onPick((due, p.hasTime))
@@ -190,11 +191,13 @@ struct WhenPicker: View {
 
 /// 鼠标移上去淡淡高亮一下
 struct HoverRowStyle: ButtonStyle {
+    @ObservedObject private var appTypography = TypographySettings.shared
     func makeBody(configuration: Configuration) -> some View {
         HoverRow(configuration: configuration)
     }
 
     private struct HoverRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
         let configuration: ButtonStyle.Configuration
         @State private var hovering = false
 

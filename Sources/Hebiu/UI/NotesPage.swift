@@ -4,6 +4,7 @@ import SwiftUI
 
 /// 日常 → 随手记：一行字记下来，按天分组，能搜、能改、能删
 struct NotesPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
     @State private var draft = ""
     @State private var query = ""
@@ -14,7 +15,7 @@ struct NotesPage: View {
             HStack(spacing: 10) {
                 Image(systemName: "square.and.pencil").foregroundStyle(Theme.accent)
                 TextField("记点什么…（回车保存，可以加 #标签）", text: $draft, axis: .vertical)
-                    .textFieldStyle(.plain).font(.system(size: 15)).lineLimit(1...5)
+                    .textFieldStyle(.plain).font(.hebiuSystem(size: 15)).lineLimit(1...5)
                     .focused($inputFocused)
                     .onSubmit(save)
                 if !draft.isEmpty { Button("记下", action: save).buttonStyle(.borderedProminent).controlSize(.small) }
@@ -31,16 +32,16 @@ struct NotesPage: View {
                     TextField("找一找", text: $query).textFieldStyle(.plain)
                     if !query.isEmpty { Button { query = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary) }
                     Spacer()
-                    Text("\(all.count) 条").font(.caption).foregroundStyle(.secondary)
+                    Text("\(all.count) 条").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 4)
             }
 
             let shown = query.trimmingCharacters(in: .whitespaces).isEmpty ? all : (settings.notes?.search(query, limit: 200) ?? [])
             if all.isEmpty {
-                Text("还没有随手记。终端里也能记：hebiu note 想买的书：《置身事内》").font(.callout).foregroundStyle(.secondary)
+                Text("还没有随手记。终端里也能记：hebiu note 想买的书：《置身事内》").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
             } else if shown.isEmpty {
-                Text("没找到").font(.callout).foregroundStyle(.secondary)
+                Text("没找到").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
             }
             ForEach(groups(shown), id: \.title) { group in
                 VStack(alignment: .leading, spacing: 8) {
@@ -76,6 +77,7 @@ struct NotesPage: View {
 }
 
 private struct NoteRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let note: Note
     @ObservedObject var settings: SettingsModel
     @State private var editing = false
@@ -84,7 +86,7 @@ private struct NoteRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Text(time).font(.caption).monospacedDigit().foregroundStyle(.secondary).frame(width: 40, alignment: .leading).padding(.top, 2)
+            Text(time).font(.hebiuStyle(.caption)).monospacedDigit().foregroundStyle(.secondary).frame(width: 40, alignment: .leading).padding(.top, 2)
             if editing {
                 TextField("", text: $draft, axis: .vertical).textFieldStyle(.roundedBorder).lineLimit(1...8)
                     .onSubmit(commit)
@@ -93,7 +95,7 @@ private struct NoteRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(note.text).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
                     if note.source == TodoSource.agent {
-                        Text("\(Her.she)帮你记的").font(.caption2).foregroundStyle(.secondary)
+                        Text("\(Her.she)帮你记的").font(.hebiuStyle(.caption2)).foregroundStyle(.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
