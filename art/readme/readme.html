@@ -1,0 +1,189 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Hebiu README 配图</title>
+<style>
+@font-face { font-family: "Rounded"; src: url("/font/rounded.ttf"); font-weight: 100 900; }
+:root {
+  --ink: #3B2F35; --text2: rgba(59,47,53,.62); --text3: rgba(59,47,53,.42);
+  --cream: #FFF7EE; --paper: #FFFCF8; --line: #EDE3D7;
+  --mint: #8CC7A1; --mint-deep: #3F8A5E; --mint-tint: #E9F4EC; --pink: #F08AA8;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: transparent; }
+body { font-family: "PingFang SC", -apple-system, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+.g { display: none; padding: 24px; width: max-content; }
+.g.on { display: block; }
+
+/* ---------- logo ---------- */
+.logo { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 460px; padding: 8px 0 4px; }
+.squircle { width: 176px; height: 176px; position: relative; filter: drop-shadow(0 10px 18px rgba(0,0,0,.14)); }
+.squircle svg { position: absolute; inset: 0; }
+.squircle img { position: absolute; left: 50%; bottom: 9%; width: 82%; transform: translateX(-50%); }
+.word { font-family: "Rounded"; font-weight: 700; font-size: 76px; letter-spacing: -1px; line-height: 1; display: flex; align-items: flex-end; }
+.word .i { position: relative; display: inline-block; }
+.word .i svg { position: absolute; left: 50%; top: -6px; width: 34px; transform: translateX(-46%); }
+.dark .word { color: #F4EDE4; }
+
+/* ---------- 示意图 ---------- */
+.diagram { width: 1120px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 26px; padding: 30px 32px 34px; }
+.cols { display: grid; grid-template-columns: 1.08fr 66px 1.1fr 66px 1.08fr; align-items: stretch; }
+.col-head { text-align: center; margin-bottom: 18px; }
+.col-head b { display: block; font-size: 22px; font-weight: 700; }
+.col-head span { font-size: 14px; color: var(--text2); }
+.col-head.center b { color: var(--mint-deep); }
+.stack { display: flex; flex-direction: column; gap: 10px; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; padding: 12px; height: calc(100% - 66px); }
+.item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--paper); border: 1px solid #F1E9DF; flex: 1; }
+.tile { width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--mint-tint); display: grid; place-items: center; overflow: hidden; }
+.tile svg { width: 22px; height: 22px; fill: none; stroke: var(--ink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.tile img { width: 40px; margin-top: 2px; }
+.item b { display: block; font-size: 16px; font-weight: 600; }
+.item span { display: block; font-size: 12.5px; color: var(--text2); margin-top: 2px; line-height: 1.35; }
+.core { background: #fff; border: 2px solid var(--mint); border-radius: 22px; padding: 18px 16px 16px; height: calc(100% - 66px); display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(63,138,94,.10); }
+.core-top { display: flex; align-items: center; gap: 14px; padding: 2px 6px 14px; border-bottom: 1px dashed var(--line); margin-bottom: 12px; }
+.core-top .squircle { flex: none; width: 64px; height: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.12)); }
+.core-top b { font-family: "Rounded"; font-size: 30px; font-weight: 700; display: block; line-height: 1.1; }
+.core-top span { font-size: 13px; color: var(--text2); }
+.chip { display: flex; flex-direction: column; justify-content: center; padding: 10px 12px; border-radius: 14px; background: var(--mint-tint); margin-top: 8px; flex: 1; }
+.chip i { display: none; }
+.chip b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mint-deep); margin: 0 9px 2px 1px; vertical-align: middle; }
+.chip span { padding-left: 18px; }
+.chip b { display: block; font-size: 15.5px; font-weight: 600; }
+.chip span { display: block; font-size: 12.5px; color: var(--text2); margin-top: 2px; line-height: 1.35; }
+.arrow { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; padding-top: 66px; }
+.arrow span { font-size: 12.5px; color: var(--mint-deep); font-weight: 600; white-space: nowrap; }
+.arrow svg { width: 56px; height: 18px; fill: none; stroke: var(--mint-deep); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.foot { margin-top: 18px; text-align: center; font-size: 13px; color: var(--text3); }
+
+/* ---------- 表情一览 ---------- */
+#diagram-en, #faces-en { font-family: -apple-system, "Helvetica Neue", sans-serif; }
+.faces { width: 1120px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 26px; padding: 18px 20px 16px; display: grid; grid-template-columns: repeat(8, 1fr); }
+.face { text-align: center; }
+.face img { width: 116px; display: block; margin: 0 auto -4px; }
+.face span { font-size: 19px; color: var(--text2); }
+</style></head>
+<body>
+
+<!-- logo：浅色和深色各一版，字的颜色不同 -->
+<div class="g" id="logo-light"><div class="logo"><div class="squircle"></div><div class="word">Heb<span class="i">ı</span>u</div></div></div>
+<div class="g dark" id="logo-dark"><div class="logo"><div class="squircle"></div><div class="word">Heb<span class="i">ı</span>u</div></div></div>
+
+<!-- 它怎么工作 -->
+<div class="g" id="diagram-zh"><div class="diagram">
+  <div class="cols">
+    <div>
+      <div class="col-head"><b>它听到什么</b><span>钩子 · 你说的话 · 数据来源</span></div>
+      <div class="stack">
+        <div class="item"><div class="tile" data-icon="terminal"></div><div><b>Claude Code</b><span>开始、干活、等批准、完成、出错</span></div></div>
+        <div class="item"><div class="tile" data-icon="code"></div><div><b>Codex</b><span>开始、干活、等批准、完成</span></div></div>
+        <div class="item"><div class="tile" data-icon="mic"></div><div><b>你说的话</b><span>⌃⌥H 浮窗、聊天页、语音</span></div></div>
+        <div class="item"><div class="tile" data-icon="calendar"></div><div><b>日历 · 提醒事项</b><span>默认关闭，只读本机</span></div></div>
+        <div class="item"><div class="tile" data-icon="plug"></div><div><b>自己写的脚本</b><span>输出 JSON 就能变成待办</span></div></div>
+      </div>
+    </div>
+    <div class="arrow"><span>事件</span><svg viewBox="0 0 56 18"><path d="M2 9h50M44 3l8 6-8 6"/></svg></div>
+    <div>
+      <div class="col-head center"><b>Hebiu</b><span>住在桌面上的个人 Agent</span></div>
+      <div class="core">
+        <div class="core-top"><div class="squircle"></div><div><b>Biu</b><span>默认形象，可以换成你自己的</span></div></div>
+        <div class="chip"><i></i><div><b>形象包</b><span>样子、动作、台词、人设，一个文件夹</span></div></div>
+        <div class="chip"><i></i><div><b>待办与提醒</b><span>一句话加待办，习惯、重要日子、番茄钟</span></div></div>
+        <div class="chip"><i></i><div><b>AI 大脑（可选）</b><span>用自己的 DeepSeek key 聊天、改待办<br>每晚写日记，慢慢记住你</span></div></div>
+      </div>
+    </div>
+    <div class="arrow"><span>动作和提醒</span><svg viewBox="0 0 56 18"><path d="M2 9h50M44 3l8 6-8 6"/></svg></div>
+    <div>
+      <div class="col-head"><b>它怎么告诉你</b><span>动作 · 气泡 · 通知</span></div>
+      <div class="stack">
+        <div class="item"><div class="tile"><img src="../../Resources/characters/default/frames/type.webp"></div><div><b>做动作</b><span>敲键盘、喊你、庆祝、晕一下</span></div></div>
+        <div class="item"><div class="tile" data-icon="bubble"></div><div><b>头顶气泡</b><span>台词、到点提醒、AI 的回答</span></div></div>
+        <div class="item"><div class="tile" data-icon="bell"></div><div><b>系统通知</b><span>待办到点，勿扰时也会提醒</span></div></div>
+        <div class="item"><div class="tile" data-icon="window"></div><div><b>主窗口 · 菜单栏</b><span>待办、习惯、回顾、番茄钟</span></div></div>
+        <div class="item"><div class="tile" data-icon="lock"></div><div><b>都在本机</b><span>数据是 ~/.hebiu 里的纯文本</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="g" id="diagram-en"><div class="diagram">
+  <div class="cols">
+    <div>
+      <div class="col-head"><b>What it hears</b><span>Hooks · your words · data sources</span></div>
+      <div class="stack">
+        <div class="item"><div class="tile" data-icon="terminal"></div><div><b>Claude Code</b><span>start, work, approval, done, error</span></div></div>
+        <div class="item"><div class="tile" data-icon="code"></div><div><b>Codex</b><span>start, work, approval, done</span></div></div>
+        <div class="item"><div class="tile" data-icon="mic"></div><div><b>Your words</b><span>⌃⌥H popup, chat page, voice</span></div></div>
+        <div class="item"><div class="tile" data-icon="calendar"></div><div><b>Calendar · Reminders</b><span>off by default, read locally</span></div></div>
+        <div class="item"><div class="tile" data-icon="plug"></div><div><b>Your own scripts</b><span>print JSON, get to-dos</span></div></div>
+      </div>
+    </div>
+    <div class="arrow"><span>events</span><svg viewBox="0 0 56 18"><path d="M2 9h50M44 3l8 6-8 6"/></svg></div>
+    <div>
+      <div class="col-head center"><b>Hebiu</b><span>a personal agent on your desktop</span></div>
+      <div class="core">
+        <div class="core-top"><div class="squircle"></div><div><b>Biu</b><span>the default — make your own</span></div></div>
+        <div class="chip"><i></i><div><b>Character pack</b><span>looks, actions, lines and persona</span></div></div>
+        <div class="chip"><i></i><div><b>To-dos &amp; reminders</b><span>one-line to-dos, habits, dates, Pomodoro</span></div></div>
+        <div class="chip"><i></i><div><b>AI brain (optional)</b><span>chat and edit to-dos via DeepSeek<br>a nightly diary helps it remember you</span></div></div>
+      </div>
+    </div>
+    <div class="arrow"><span>reactions</span><svg viewBox="0 0 56 18"><path d="M2 9h50M44 3l8 6-8 6"/></svg></div>
+    <div>
+      <div class="col-head"><b>How it tells you</b><span>Animations · bubbles · notifications</span></div>
+      <div class="stack">
+        <div class="item"><div class="tile"><img src="../../Resources/characters/default/frames/type.webp"></div><div><b>Animations</b><span>typing, calling you, cheering, dizzy</span></div></div>
+        <div class="item"><div class="tile" data-icon="bubble"></div><div><b>Speech bubble</b><span>lines, due reminders, AI replies</span></div></div>
+        <div class="item"><div class="tile" data-icon="bell"></div><div><b>Notifications</b><span>to-dos due, even in Focus mode</span></div></div>
+        <div class="item"><div class="tile" data-icon="window"></div><div><b>Main window · menu bar</b><span>to-dos, habits, review, Pomodoro</span></div></div>
+        <div class="item"><div class="tile" data-icon="lock"></div><div><b>All local</b><span>plain text in ~/.hebiu</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 表情一览 -->
+<div class="g" id="faces-zh"><div class="faces" data-faces="wave:招手,type:敲键盘,proud:完成啦,heart:比心,think:想一想,sleepy:打瞌睡,pout:鼓嘴,tea:喝茶"></div></div>
+<div class="g" id="faces-en"><div class="faces" data-faces="wave:hello,type:typing,proud:done,heart:love,think:thinking,sleepy:sleepy,pout:pouting,tea:tea time"></div></div>
+
+<script>
+// 超椭圆底板（和 App 图标同一个形状和颜色），里面放 Biu 招手
+function squircle(n = 5, pts = 240) {
+  let d = "";
+  for (let i = 0; i < pts; i++) {
+    const t = 2 * Math.PI * i / pts, c = Math.cos(t), s = Math.sin(t);
+    const x = 50 + 50 * Math.sign(c) * Math.abs(c) ** (2 / n), y = 50 + 50 * Math.sign(s) * Math.abs(s) ** (2 / n);
+    d += (i ? "L" : "M") + x.toFixed(2) + " " + y.toFixed(2);
+  }
+  return d + "Z";
+}
+const FRAMES = "../../Resources/characters/default/frames/";
+document.querySelectorAll(".squircle").forEach((el, n) => {
+  el.innerHTML = `<svg viewBox="0 0 100 100"><defs><linearGradient id="sq${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E2F3D6"/><stop offset="1" stop-color="#C4E4B6"/></linearGradient></defs>
+    <path d="${squircle()}" fill="#D3EBC6"/></svg><img src="${FRAMES}wave.webp">`;
+  const grad = el.querySelector("linearGradient"); el.querySelector("path").setAttribute("fill", `url(#${grad.id})`);
+});
+// 「i」上的点换成 Biu 头顶的小芽
+document.querySelectorAll(".word .i").forEach(el => el.insertAdjacentHTML("beforeend",
+  `<svg viewBox="0 0 40 34"><path d="M19 33 C20 25 21 20 23 15" stroke="#6FB28A" stroke-width="4" fill="none" stroke-linecap="round"/>
+   <path d="M22 16 C30 6 38 8 39 12 C33 19 27 20 22 16Z" fill="#8CC7A1"/><path d="M21 18 C13 9 4 11 3 15 C9 22 16 22 21 18Z" fill="#8CC7A1"/></svg>`));
+// 一套线性小图标：24 网格、圆头圆角
+const ICONS = {
+  terminal: '<rect x="3" y="4.5" width="18" height="15" rx="3.5"/><path d="M7.5 9.5l3 2.5-3 2.5M12.5 15h4"/>',
+  code: '<path d="M9 7.5L4.5 12 9 16.5M15 7.5l4.5 4.5-4.5 4.5"/>',
+  mic: '<rect x="9" y="3.5" width="6" height="10.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V20.5"/>',
+  calendar: '<rect x="4" y="5.5" width="16" height="14.5" rx="3.5"/><path d="M4 10h16M8.5 3.5v3.5M15.5 3.5v3.5"/>',
+  plug: '<path d="M9 3.5v4.5M15 3.5v4.5M7 8h10v3.5a5 5 0 0 1-10 0zM12 16.5v4"/>',
+  bubble: '<path d="M4.5 7a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-4.5l-4 3.5V16H7.5a3 3 0 0 1-3-3z"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke-width="2.6"/>',
+  bell: '<path d="M6.5 16.5v-5a5.5 5.5 0 0 1 11 0v5l1.5 1.5H5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  window: '<rect x="3" y="4.5" width="18" height="15" rx="3.5"/><path d="M3 9h18M6.5 6.8h.01M9 6.8h.01"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+};
+document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = `<svg viewBox="0 0 24 24">${ICONS[el.dataset.icon]}</svg>`);
+document.querySelectorAll("[data-faces]").forEach(el => el.innerHTML = el.dataset.faces.split(",").map(p => {
+  const [f, name] = p.split(":"); return `<div class="face"><img src="${FRAMES}${f}.webp"><span>${name}</span></div>`;
+}).join(""));
+// ?show=logo-light 只显示那一张；不带参数全显示，方便预览
+const show = new URLSearchParams(location.search).get("show");
+document.querySelectorAll(".g").forEach(el => el.classList.toggle("on", !show || el.id === show));
+window.GRAPHICS = [...document.querySelectorAll(".g")].map(el => el.id);
+</script>
+</body></html>

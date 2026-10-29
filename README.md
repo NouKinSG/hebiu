@@ -1,251 +1,132 @@
-# Hebiu
+<div align="center">
 
-住在 Mac 桌面上的个人 Agent。它是一个会动的小角色：陪你写代码、帮你记事、到点叫你，打开「AI 大脑」后能听懂大白话、记得你说过的事。长什么样、叫什么、什么性格、每件事做什么动作，全都可以自己换。
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.png">
+  <img src="docs/images/logo-light.png" alt="Hebiu" width="300">
+</picture>
 
-![Biu](docs/images/biu.png)
+### 住在 Mac 桌面上的个人 Agent
 
-<sub>默认形象 Biu，全部用代码画的。做一个你自己的：[docs/CHARACTERS.md](docs/CHARACTERS.md) · English: [README.en.md](README.en.md)</sub>
+陪你写代码 · 帮你记事 · 到点叫你 · 形象随你换
 
-- **陪你用 Claude Code / Codex**：AI 干活时它敲键盘，等你确认时喊你，做完了庆祝，出错了晕一下；开好几个会话也分得清
-- **待办和提醒**：一句话加待办（「明天下午三点 交周报」「每周五 5 点」），到点叫你；还有习惯打卡、重要日子（支持农历）、番茄钟、随手记、心情、每周回顾
-- **AI 大脑（可选）**：接你自己的 DeepSeek key，和它聊天、让它帮你加待办改时间；每晚写日记，慢慢记住你
-- **形象全可换**：图片、名字、称呼、人设、台词、动作表都在一个形象包里；主窗口能直接改动作
-- **安静、本地**：原生 Swift，常驻约 15 MB 内存、CPU 1% 以内；默认不联网，数据都是 `~/.hebiu/` 里的纯文本
+[![test](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml/badge.svg)](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-8CC7A1)](LICENSE) [![macOS](https://img.shields.io/badge/macOS-13%2B-3B2F35?logo=apple&logoColor=white)](#快速开始) [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](Package.swift) [![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8CC7A1)](#和-claude-code--codex-一起用)
 
-## 安装
+[快速开始](#快速开始) · [使用说明](docs/USAGE.md) · [做自己的形象](docs/CHARACTERS.md) · [常见问题](#常见问题) · [参与贡献](CONTRIBUTING.md)
 
-需要 macOS 13 以上和 Xcode 命令行工具（`xcode-select --install`）。
+</div>
+
+**中文** | [English](README.en.md)
+
+Hebiu 是一个住在屏幕角落的小角色。你用 Claude Code 或 Codex 写代码时，它跟着敲键盘、等你批准时喊你、做完了替你高兴；平时帮你记待办、到点叫你、提醒你休息。打开「AI 大脑」后，它能听懂大白话，每晚写日记，慢慢记住你。长什么样、叫什么、什么性格、每件事做什么动作，全都可以换成你自己的。
+
+**原生 Swift · 默认不联网 · 数据都是本机纯文本 · MIT 开源**
+
+<p align="center">
+  <img src="docs/images/diagram-zh.png" alt="Hebiu 怎么工作：听到 Claude Code、Codex、你说的话和数据来源，用动作、气泡、通知告诉你" width="100%">
+</p>
+
+## 它能做什么
+
+| | |
+|:---:|---|
+| <img src="Resources/characters/default/frames/type.webp" width="76"> | **陪你写代码**<br>Claude Code、Codex 干活时它敲键盘，要你批准时喊你，做完了庆祝，出错了晕一下。好几个会话一起开也分得清，后台那个做完了会小声告诉你。 |
+| <img src="Resources/characters/default/frames/wait.webp" width="76"> | **一句话记事，到点叫你**<br>「明天下午三点交周报」「每周五 5 点」「每年 3 月 8 日买花」，时间自动认出来；到点它跳出来喊你。还有习惯打卡、重要日子（支持农历）、番茄钟、随手记、心情、每周回顾。 |
+| <img src="Resources/characters/default/frames/heart.webp" width="76"> | **AI 大脑（可选）**<br>接你自己的 DeepSeek key：和它聊天，让它帮你加待办、改时间、打勾；每晚写一篇日记，记下对你的了解，你可以看、可以改、可以删。 |
+| <img src="Resources/characters/default/frames/star.webp" width="76"> | **形象随你换**<br>图片、名字、称呼、人设、台词、动作表都在一个形象包里。主窗口「动作」页能直接改每个动作怎么演，不用写代码。 |
+| <img src="Resources/characters/default/frames/sleepy.webp" width="76"> | **安静，不打扰**<br>可以只在选中的 App（比如终端）里出现，或者平时藏起来、有事才出来；你不动电脑它就睡觉，安静时段自动勿扰。常驻约 15 MB 内存，CPU 1% 以内。 |
+| <img src="Resources/characters/default/frames/bliss.webp" width="76"> | **都在本机**<br>默认不联网，数据是 `~/.hebiu/` 里的纯文本，能直接看、直接改、直接备份；key 存在系统钥匙串里。 |
+
+## 快速开始
+
+需要 macOS 13 以上，和 Xcode 命令行工具（`xcode-select --install`）。
 
 ```bash
 git clone https://github.com/NouKinSG/hebiu.git
 cd hebiu
 make install          # 编译、装到 ~/Applications、开机自启、启动
-make hooks            # 可选：接上 Claude Code / Codex（只追加带 #hebiu 标记的钩子，先备份原配置）
 ```
 
-想把 App 标识换成自己的（钥匙串、开机自启都用它），在仓库根目录建一个 `local.mk`：`BUNDLE_ID = com.你的名字.hebiu`。
+装好后它就出现在屏幕右下角了，点它、拖它、按住它看看。接下来按需要：
 
-## 怎么和它互动
-
-| 操作 | 反应 |
+| 想要 | 做什么 |
 |---|---|
-| 点它 | 随机一种反应（摸摸头、比心、坏笑……），连续两次不一样；一直点也会一直反应 |
-| 6 秒内连戳 5 下 | 「别戳啦」 |
-| 右键 / 双击 | 固定的两个反应（形象包里设） |
-| 拖动 | 换位置（会记住） |
-| 按住半秒 / Option + 点击 | 弹出菜单（菜单栏图标被刘海挡住时用这个） |
-| 点头上的气泡 | 打开对应的页面 |
+| 跟着 Claude Code / Codex 动 | `make hooks`，然后新开一个会话（Codex 第一次会问要不要信任新钩子，选信任） |
+| 和它聊天、让它记住你 | 主窗口「连接 → AI 大脑」粘贴 DeepSeek key，打开开关；之后按 ⌃⌥H 跟它说话 |
+| 换成别的样子 | 「设置 → 形象」，或者[做一个自己的](docs/CHARACTERS.md) |
+| 只在终端里出现 | 「设置 → 在哪显示」选「只在选中的 App」 |
 
-闲着时它会眨眼、做小动作、身子往鼠标那边歪；不动电脑一会儿会睡着，动一下鼠标吓一跳醒来。
+全部功能和命令见[使用说明](docs/USAGE.md)。
 
-## 换形象
+## 和 Claude Code / Codex 一起用
 
-「设置 → 形象」里选。自己做一个：复制 `Resources/characters/default` 到 `~/.hebiu/characters/<名字>`，换图、改 `character.json`，详见 [docs/CHARACTERS.md](docs/CHARACTERS.md)。只想改某个动作怎么演，在主窗口「动作」页点那一格上的铅笔就行。
+`make hooks` 给装了的那个（或两个都）追加几条钩子，命令都带 `#hebiu` 标记，改之前先备份。钩子只往 `~/.hebiu/events` 追加一行、不输出任何东西、永远返回成功，Hebiu 没开着也不会让它们报错或变慢。
 
-## 主窗口
+| 发生了什么 | Claude Code | Codex | 它做什么 |
+|---|---|---|---|
+| 打开会话 | SessionStart | SessionStart | 打招呼 |
+| 你发了消息 | UserPromptSubmit | UserPromptSubmit | 敲键盘，直到下一件事 |
+| 要你批准 | Notification | PermissionRequest | 跳出来喊你 |
+| 做完了 | Stop | Stop | 庆祝 |
+| 出错了 | PostToolUseFailure / StopFailure | — | 晕一下 |
 
-菜单（菜单栏小嫩芽，或在它身上按住）固定 6 项：打开 Hebiu（⌘O）、快速加待办（⌘N）、勿扰、隐藏、设置（⌘,）、退出。其余都在主窗口里，左边按类分组：
+## 表情
 
-| 分组 | 页面 |
-|---|---|
-| 日常 | 主页（它、纪念日、天气、快到的重要日子、下一个提醒、番茄钟、今天的习惯、今天心情、今天的小记录、今天的待办）、聊天、待办、习惯、随手记、回顾 |
-| 它 | 动作（点缩略图它就做，点铅笔改怎么演）、台词、人设、它记得的事、我们（纪念日、生日、重要日子、合照、一起的小记录） |
-| 连接 | AI 大脑（key、开关、花费和近 7 天）、定时让它做、数据来源、Claude / Codex（钩子接没接上、每种事件最近一次） |
-| 设置 | 大小位置、在哪显示（任何地方 / 选中的 App / 平时不显示，有事才出来）、勿扰和安静时段、陪伴提醒（番茄钟、天气城市、晚上问心情）、待办提醒、开机自启 |
+<p align="center"><img src="docs/images/faces-zh.png" alt="Biu 的表情" width="100%"></p>
 
-以后加功能：天天用的放「日常」或主页卡片，和形象有关的放「它」，接外面数据的放「连接」，设一次就不管的放「设置」；菜单不再加项。
+默认形象 Biu 一共 27 帧，全部用代码画的（[art/biu](art/biu)），可以随便改、随便用。
 
-## 待办
-
-主窗口「待办」页，或菜单「快速加待办」（⌘N）、`hebiu todo open`。顶部输入框写一句话，时间自动识别：
-
-| 写法 | 识别成 |
-|---|---|
-| `15:00 开会`、`3点开会` | 今天 15:00（没说上下午的 1～7 点按下午算；时间过了就是明天） |
-| `明天 10:00 交周报`、`后天上午十点 体检` | 明天 10:00、后天 10:00 |
-| `周五 晚上8点 看电影`、`下周一 9点 例会` | 最近的周五 20:00、下周一 09:00 |
-| `10月30日 体检`、`10-30 续费` | 只有日期，当天的汇总里提醒 |
-| `30分钟后 拿外卖`、`1个半小时后 出门` | 从现在算 |
-| `买猫粮` | 没有时间，放在「今天」里 |
-| `每周五下午5点 交周报`、`每天晚上10点 吃维生素`、`工作日早上9点 打卡`、`每月15号 还信用卡`、`每年3月8日 买花` | 重复待办，打勾后自动排下一次 |
-
-- 点圆圈打勾，底部可以撤销；双击编辑；右键推迟 1 小时 / 推迟到明天 / 删除
-- 已完成的保留 7 天后自动清掉
-
-它什么时候提醒你：
-
-| 时机 | 它的反应 |
-|---|---|
-| 待办到点 | 喊你，气泡一直挂着直到你点它；同时发系统通知（可关） |
-| 每天第一次用电脑（6 点后） | 说说今天有哪些事 |
-| 下班前（默认 18:00）还有没做完的 | 鼓嘴提醒一次 |
-| 打勾完成 | 「完成啦」 |
-
-勿扰模式下只保留到点提醒。
-
-## AI 大脑（和它聊天）
-
-用你自己的 DeepSeek 账号，让它听懂大白话：
-
-| 你说 | 它做什么 |
-|---|---|
-| 「明天下午三点提醒我给妈妈打电话」 | 加待办（时间用 hebiu 自己的中文时间识别） |
-| 「我今天还有什么事？」 | 挑重点讲今天的待办 |
-| 「周报写完了」 | 找到那条打勾 |
-| 「开会改到六点了」 | 改时间 |
-| 「好累啊」 | 哄你，配个表情 |
-
-- 打开：主窗口「连接 → AI 大脑」里粘贴 key（存进钥匙串，只显示末四位）并打开开关
-- 说话：⌃⌥H 在它头顶弹出对话框（设置里可改），或「日常 → 聊天」页，或终端 `hebiu say 一句话`；点麦克风可以直接说（本机识别中文，停顿一会儿自动发送）
-- 人设：「它 → 人设」，或直接改 `~/.hebiu/persona.md`
-- 它能查、加、打勾、改时间待办，每个改动都能撤销；删待办它只能提出来，**你点「删除」才真删**；不能对外发任何东西
-- 发给 DeepSeek 的只有：你说的话、人设、你自己加的待办的标题和时间。日历、提醒事项、GitLab 等来源的待办一律不发
-- 每次请求按官方价格记账（`~/.hebiu/agent/usage.jsonl`），每月上限默认 30 元，到了自动停；实测每句话约 0.2～0.5 分钱
-- 对话记录在 `~/.hebiu/agent/chat.jsonl`，只在本机
-- 会主动：早上汇总、下班前、休息、深夜那几句由 AI 结合当天的事来说；每天给各个动作写一批新台词（`~/.hebiu/agent/lines.json`）
-- 「允许它看日历、GitLab 来的待办」默认关；打开后这些标题也会发给 DeepSeek，它能查、能打勾，但改不了时间
-
-### 它的记忆
-
-```
-聊天记录 chat.jsonl ──每晚──▶ 日记 diary/  ──每周/每月──▶ 周记 weekly/ · 月记 monthly/
-                         └──▶ 对你的了解 profile.md（最多 50 条，每晚改写）
-```
-
-- 都在 `~/.hebiu/agent/memory/`，主窗口「它 → 它记得的事」能看、能改、能删；删了它就真忘了
-- 聊天时带上：了解 + 最近 3 篇日记 + 最近一篇周记、月记；更早的它用 recall 工具自己翻
-- 凌晨 4 点前算前一天；电脑没开的日子下次打开时补上（最多补 7 天）
-- 「日记里带上你写代码的时间」只用钩子记下的时间和次数，不含项目和内容
-- 不记具体哪天要做的事（那是待办），不记密码、账号、钱数和公司内部信息
-
-## 习惯、心情、随手记、重要日子
-
-| 功能 | 怎么加 | 它会 |
-|---|---|---|
-| 习惯 | 「日常 → 习惯」写 `喝水 每天下午3点提醒`、`健身 每周一三五`；或跟它说 | 到点没打卡提醒；聊天里说「喝过水了」帮你打卡；记连续天数 |
-| 心情 | 主页点一个表情；或跟它说今天过得怎样 | 晚上 9 点还没记就问一句；写进日记、回顾 |
-| 随手记 | 「日常 → 随手记」或 `hebiu note 一句话`，可以加 #标签 | 你问「我之前记的那个…」它去翻 |
-| 重要日子 | 「我们」页写 `妈妈生日 农历八月十五`、`第一次约会 2024年5月20日` | 提前 7 天、1 天、当天提醒，顺便给个礼物或安排的建议 |
-| 定时让它做 | 「连接 → 定时让它做」写 `每天早上8点 用一句话鼓励我`；或跟它说 | 到点结合今天的待办、天气、心情去做，说给你听 |
-
-每周日晚上它会说一声：「日常 → 回顾」里有这周的数字、每天写代码到几点、心情、习惯，可以让它写一段总结。
-
-## 命令行
-
-`make install` 会把 `hebiu` 链接到 `~/.local/bin`：
+## 做一个自己的形象
 
 ```bash
-hebiu say 我今天还有什么事           # 和它说话（要先打开 AI 大脑）
-hebiu memory                        # 它记得什么；hebiu memory sync 补整理，hebiu diary 写今天的日记
-hebiu focus 25                      # 开始一个番茄；hebiu focus stop 结束
-hebiu photo                         # 弹一张合照
-hebiu note 想看的电影：花样年华        # 随手记；hebiu note 看最近的，hebiu note find 电影 找
-hebiu habit                         # 今天的习惯；hebiu habit done 喝水 打卡
-hebiu todo                          # 没完成的待办
-hebiu todo add 明天 10:00 交周报      # 加一条
-hebiu todo done 周报                 # 打勾（写 id 或标题里的字）
-hebiu todo undo 周报 / rm 周报        # 取消打勾 / 删除
-hebiu todo json                     # 给脚本用
-hebiu done / error / love …         # 让它做个动作（hebiu actions 看全部）
-make test && hebiu done || hebiu error
-hebiu source                        # 数据来源
-hebiu open-todos                    # 打开主窗口某一页（home chat todos habits notes review actions lines persona memory us brain tasks sources claude settings）
-hebiu help
+cp -r Resources/characters/default ~/.hebiu/characters/mine
 ```
 
-## 和 Claude Code、Codex 怎么连
+把 `frames/` 里的图换成你的（文件名不变就不用改动作表），改 `character.json` 里的名字、称呼、人设和台词，然后在「设置 → 形象」里选 `mine`。格式说明和每个动作什么时候触发，见 [docs/CHARACTERS.md](docs/CHARACTERS.md)。
 
-`make hooks` 装了哪个接哪个：Claude Code 写进 `~/.claude/settings.json`，Codex 写进 `~/.codex/hooks.json`，命令都带 `#hebiu` 标记：
+做好了想分享，欢迎提 PR 放进 `Resources/characters/`。
 
-| Claude Code 事件 | Codex 事件 | 它的动作 |
-|---|---|---|
-| SessionStart | SessionStart | 打招呼 |
-| UserPromptSubmit | UserPromptSubmit | 敲键盘（直到下一个事件） |
-| Notification（要你批准时） | PermissionRequest | 喊你确认 |
-| Stop | Stop | 完成啦 |
-| PostToolUseFailure / StopFailure | — | 出错的动作（一分钟最多一次） |
+## 常见问题
 
-每条命令只往 `~/.hebiu/events` 追加一行、不输出任何东西、永远返回成功：hebiu 没开、文件夹不存在时它们都不会报错或变慢。改之前备份到 `~/.hebiu/backup/`；`env`、`statusLine`、别的钩子一概不碰；重复执行不会重复添加。新开的会话才生效；Codex 第一次会问要不要信任新钩子，选信任。
+<details>
+<summary><b>只能在 Mac 上用吗？</b></summary>
 
-## 陪伴提醒
+是的，界面用的是 AppKit / SwiftUI，需要 macOS 13 以上（Apple 芯片和 Intel 都可以）。形象包、配置文件、钩子格式都是通用的，以后做别的平台可以沿用。
+</details>
 
-| 提醒 | 什么时候 | 动作 |
-|---|---|---|
-| 休息 | Claude / Codex 连续有动静超过 2 小时（中间停 15 分钟算休息过），之后每 30 分钟最多一次 | 鼓嘴 |
-| 深夜 | 23 点以后还在用 Claude / Codex，每小时最多一次 | 犯困 |
-| 纪念日 | 每年那一天、每满 100 天（设置里填了才有） | 冒爱心 +「第 N 天」 |
-| 生日 | 当天一次 | 欢呼 → 冒爱心 |
-| 重要日子 | 提前 7 天、1 天、当天（9～23 点之间） | 冒爱心 + 提醒准备 |
-| 习惯 | 设的提醒时间到了还没打卡 | 喊你 |
-| 心情 | 晚上 9 点还没记（可改、可关） | 托腮问一句 |
-| 番茄钟 | 专心时间到、休息时间到 | 喝奶茶叫你休息 / 挥手叫你回来 |
-| 安静时段 | 设置里写的时间段（如 12:00-13:30） | 自动勿扰 |
+<details>
+<summary><b>要花钱吗？</b></summary>
 
-「在忙」只看钩子事件；早上汇总和下班提醒只看最近有没有动过键盘鼠标（不读内容）。
+Hebiu 本身免费。只有打开「AI 大脑」时会用到你自己的 DeepSeek 账号，按官方价格计费，日常聊天大约每月几块钱；默认每月上限 30 元，到了自动停，可以在设置里改。
+</details>
 
-## 设置
+<details>
+<summary><b>不用 Claude Code / Codex 也能用吗？</b></summary>
 
-主窗口里改，或直接改 `~/.hebiu/hebiu.md`（保存即生效）。主窗口保存时按模板整份重写 `hebiu.md`，手动加的说明文字不会保留。
+能。待办、提醒、习惯、番茄钟、AI 大脑这些都不依赖它们，钩子不装就行。
+</details>
 
-## 数据来源
+<details>
+<summary><b>会拖慢 Claude Code / Codex 吗？</b></summary>
 
-把外面的事情自动变成待办，都**默认关闭**、只读、只存在本机：
+不会。每条钩子只往本地文件追加一行，不等 Hebiu 回应，也不替你批准任何权限请求。
+</details>
 
-| 来源 | 内容 |
-|---|---|
-| Mac 日历 | 今天和明天的会议，开始前 5 分钟提醒（第一次打开时系统会问权限） |
-| Mac 提醒事项 | 没完成的提醒，手机上加的也会同步过来 |
-| GitLab review | 等你 review 的 MR，合并后自动消失（用本机已登录的 glab） |
-| 自己写 | 任何语言写个脚本放进 `~/.hebiu/sources/`，打印 JSON 就行 |
+<details>
+<summary><b>会把我的东西发出去吗？</b></summary>
 
-关掉一个来源时，它带进来、还没完成的待办会一起清掉。写法见 [docs/SOURCES.md](docs/SOURCES.md)。
+默认不联网。打开天气只发城市名给 Open-Meteo；打开 AI 大脑后，你说的话、人设、你自己加的待办标题和时间会发给你自己的 DeepSeek 账号。日历、提醒事项、GitLab 等来源默认关，打开了也不发给 AI，除非你单独允许。
+</details>
 
-## 项目结构
+<details>
+<summary><b>怎么备份、换电脑、卸载？</b></summary>
 
-| 路径 | 内容 |
-|---|---|
-| `Sources/HebiuKit/` | 核心逻辑（配置、待办、时间识别、提醒规则、数据来源、AI 大脑、形象包），不依赖界面，有单元测试 |
-| `Sources/Hebiu/` | 桌宠程序：窗口、动画、菜单、主窗口各页；带参数运行时是命令行 |
-| `Tests/HebiuKitTests/` | 单元测试（`make test`，不碰 `~/.hebiu`） |
-| `Resources/characters/` | 自带的形象包 |
-| `art/biu/` | 默认形象 Biu 的画法（SVG 生成，`make art` 重画） |
-| `icon/` | App 图标（`make icon` 从形象的一帧生成） |
-| `datasources/` | 数据来源脚本（`make install` 时装进 `~/.hebiu/sources/`） |
-| `scripts/` | 编译、安装、钩子、卸载、备份恢复 |
-| `docs/` | [架构](docs/ARCHITECTURE.md)、[形象包](docs/CHARACTERS.md)、[数据来源](docs/SOURCES.md)、[换电脑](docs/NEW_MACHINE.md) |
+`make backup` 把数据打包到桌面，新电脑上 `make restore FILE=备份文件`，详见[换电脑](docs/NEW_MACHINE.md)。卸载用 `make uninstall`（保留 `~/.hebiu`），`scripts/uninstall.sh --purge` 连数据一起删。
+</details>
 
-`~/.hebiu/` 里：
+## 参与贡献
 
-| 文件 | 内容 |
-|---|---|
-| `hebiu.md` | 设置、台词、纪念日、数据来源 |
-| `todo.json` | 待办 |
-| `persona.md` | 人设（AI 大脑用） |
-| `characters/` | 自己做的形象、改过的动作表 |
-| `agent/` | 对话记录、AI 花费账本、记忆（`memory/`） |
-| `habits.json` `dates.json` `notes.json` `moods.json` | 习惯、重要日子、随手记、心情 |
-| `events` | 事件文件，每行一个事件 |
-| `inbox/` | 命令行和数据来源交给它的东西，处理完就删 |
-| `sources/` | 数据来源脚本 |
-| `backup/` | 改 Claude / Codex 配置前的备份、每天一份待办备份（留 14 份） |
-| `hebiu.log` | 运行日志（超过 256 KB 自动清空） |
-
-## 常用命令
-
-```bash
-make help        # 全部命令
-make test        # 单元测试
-make install-dev # 改了代码后快速重装（只编本机架构）
-make backup      # 备份数据到桌面；make restore FILE=… 恢复
-make uninstall   # 卸载（保留 ~/.hebiu）；scripts/uninstall.sh --purge 连数据一起删
-```
-
-## 隐私
-
-- 默认不联网。天气只发城市名给 Open-Meteo；AI 大脑打开后，聊天内容、人设、你自己加的待办标题和时间会发给你自己的 DeepSeek 账号
-- DeepSeek key 存在系统钥匙串里，不落文件
-- 不读任何账号凭据、不替你批准 Claude / Codex 的权限请求；日历、提醒事项、GitLab 等来源默认关，打开后也不发给 AI（除非你单独允许）
+欢迎提 issue 和 PR：新功能、新形象、修 bug、翻译都行。开发方法和几条约定见 [CONTRIBUTING.md](CONTRIBUTING.md)，代码结构见[架构说明](docs/ARCHITECTURE.md)。
 
 ## 许可
 
-[MIT](LICENSE)。自带的形象 Biu 一起按 MIT 发布；自己做的形象请确认图片有权公开再分享。
+[MIT](LICENSE)。自带的形象 Biu 一起按 MIT 发布；分享自己做的形象时，请确认图片你有权公开。
