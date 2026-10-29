@@ -152,14 +152,21 @@ func testFileStoreRoundTrip(_ t: TestRunner) {
 
 @MainActor
 func testFileStoreCorruptBackedUp(_ t: TestRunner) {
-    let dir = tempDir()
-    let url = dir.appendingPathComponent("sessions.json")
-    try? Data("{not json".utf8).write(to: url)
-    let store = FileSessionStore(url: url, now: { date(2026, 10, 25, 21, 30, 5) })
-    t.checkEqual((try? store.load())?.count, 0, "损坏 → 空列表")
-    let backup = dir.appendingPathComponent("sessions.corrupt-20261025-213005.json")
-    t.checkEqual(store.lastBackupURL?.lastPathComponent, backup.lastPathComponent, "留底文件名")
-    t.checkEqual(try? String(contentsOf: backup, encoding: .utf8), "{not json", "留底内容原样")
+    // The fixture date is in Shanghai; backup names intentionally use local time.
+    // Exercise both zones explicitly instead of inheriting the machine's zone.
+    let previousZone = NSTimeZone.default
+    defer { NSTimeZone.default = previousZone }
+    for (offset, stamp) in [(0, "20261025-133005"), (8 * 3600, "20261025-213005")] {
+        NSTimeZone.default = TimeZone(secondsFromGMT: offset)!
+        let dir = tempDir()
+        let url = dir.appendingPathComponent("sessions.json")
+        try? Data("{not json".utf8).write(to: url)
+        let store = FileSessionStore(url: url, now: { date(2026, 10, 25, 21, 30, 5) })
+        t.checkEqual((try? store.load())?.count, 0, "损坏 → 空列表")
+        let backup = dir.appendingPathComponent("sessions.corrupt-\(stamp).json")
+        t.checkEqual(store.lastBackupURL?.lastPathComponent, backup.lastPathComponent, "留底文件名")
+        t.checkEqual(try? String(contentsOf: backup, encoding: .utf8), "{not json", "留底内容原样")
+    }
 }
 
 // MARK: - 15. 未知版本留底，之后写入正常
