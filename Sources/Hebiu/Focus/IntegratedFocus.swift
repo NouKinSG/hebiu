@@ -4,7 +4,7 @@ import AppKit
 import SwiftUI
 import FocusCore
 
-/// One timer owner shared by the pet, menu bar, home card and focus page.
+/// 桌宠、菜单栏、主页卡片和专注页共用的计时控制器。
 @preconcurrency @MainActor
 final class IntegratedFocusController: ObservableObject {
     enum Event {
@@ -21,7 +21,6 @@ final class IntegratedFocusController: ObservableObject {
     var onRestDone: (() -> Void)?
     @Published var restEnd: Date? {
         didSet {
-            guard !model.isDemo else { return }
             if let restEnd { defaults.set(restEnd, forKey: "foy.restEnd") }
             else { defaults.removeObject(forKey: "foy.restEnd") }
         }
@@ -30,7 +29,7 @@ final class IntegratedFocusController: ObservableObject {
         let m = model ?? FocusModel(defaults: FocusModel.defaultDefaults)
         self.model = m
         self.defaults = m.integrationDefaults
-        self.restEnd = m.isDemo ? nil : defaults.object(forKey: "foy.restEnd") as? Date
+        self.restEnd = defaults.object(forKey: "foy.restEnd") as? Date
         if m.engine.isRunning || m.engine.phase == .paused {
             self.restEnd = nil
             defaults.removeObject(forKey: "foy.restEnd")
@@ -63,13 +62,13 @@ final class IntegratedFocusController: ObservableObject {
     }
     func stop() { model.reset() }
     func tick() {
-        // Keep events until downstream statistics are durably saved, even across two crashes.
+        // 下游统计成功落盘前保留事件，连续崩溃后仍可重试。
         if model.engine.now() >= nextDeliveryRetry {
             for event in model.pendingCompletions { complete(event) }
         }
         model.tick()
         if let end = restEnd, model.engine.now() >= end {
-            if !model.isDemo { defaults.set(true, forKey: "foy.pendingRestDone") }
+            defaults.set(true, forKey: "foy.pendingRestDone")
             restEnd = nil
         }
         if defaults.bool(forKey: "foy.pendingRestDone"), onEvent != nil || onRestDone != nil {
@@ -89,9 +88,10 @@ final class IntegratedFocusController: ObservableObject {
         guard let onEvent else { return }
         let session = event.session
         let minutes = max(0, min(30, breakMinutes()))
-        // An older completion must not cover a new active timer or an explicit reset.
+        // 旧完成事件不能覆盖新计时或显式重置。
         if !event.breakCancelled && !model.engine.isRunning && model.engine.phase != .paused, minutes > 0 {
-            restEnd = session.endedAt.addingTimeInterval(Double(minutes) * 60)
+            let end = session.endedAt.addingTimeInterval(Double(minutes) * 60)
+            if end > model.engine.now() { restEnd = end }
         }
         do {
             try onEvent(.completed(session, recovered: event.recovered))
@@ -151,7 +151,7 @@ struct IntegratedFocusPage: View {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     HStack {
                         Image(systemName: "cup.and.saucer")
-                        Text("休息中 · " + HebiuKit.FocusSession.clock(max(0, end.timeIntervalSince(context.date))))
+                        Text("休息中 · " + HebiuKit.FocusClock.clock(max(0, end.timeIntervalSince(context.date))))
                         Button("跳过休息") { focus.restEnd = nil }
                     }
                     .padding(12)

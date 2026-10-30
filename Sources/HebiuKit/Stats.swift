@@ -16,7 +16,7 @@ public final class Stats {
 
     struct Body: Codable {
         var days: [String: [String: Int]] = [:]
-        var focusSessionIDs: Set<UUID>?
+        var focusSessionIDs: [UUID]?
     }
 
     public let url: URL
@@ -34,15 +34,17 @@ public final class Stats {
         scheduleSave()
     }
 
-    /// Count each completed focus session once, including a recovered completion.
+    /// 保留最近 4096 轮的去重标识；历史累计计数不裁剪，兼容旧版无序标识数组。
     @discardableResult
     public func recordFocusCompletion(id: UUID, at date: Date) throws -> Bool {
         var ids = body.focusSessionIDs ?? []
-        guard ids.insert(id).inserted else { return false }
+        guard !ids.contains(id) else { return false }
+        ids.append(id)
+        ids = Array(ids.suffix(4096))
         let previous = body
         body.focusSessionIDs = ids
         body.days[MemoryDay.of(date), default: [:]][Counter.focus.rawValue, default: 0] += 1
-        do { try write() } // Session ID and counter must survive together.
+        do { try write() } // 会话标识与计数必须一同落盘。
         catch { body = previous; throw error }
         return true
     }

@@ -1,9 +1,15 @@
+@Test @MainActor func FocusIntegrationRegression() {
+    FocusIntegrationChecks.run()
+}
+
 import Foundation
 import HebiuKit
 import SwiftData
 import FocusCore
+import Testing
+@testable import Hebiu
 
-/// Local prototype checks; only invoked by an explicit environment variable.
+/// 使用隔离偏好域和临时数据库的应用整合回归。
 @MainActor
 enum FocusIntegrationChecks {
     static func run() {
@@ -12,7 +18,7 @@ enum FocusIntegrationChecks {
         defer { defaults.removePersistentDomain(forName: domain) }
         let store = SwiftDataSessionStore.inMemory()
         var now = Date(timeIntervalSince1970: 1_800_000_000)
-        let model = FocusModel(defaults: defaults, environment: [:], store: store,
+        let model = FocusModel(defaults: defaults, store: store,
                                clock: { now }, scheduler: NoopNotificationScheduler())
         var starts = 0
         var completions = 0
@@ -47,7 +53,7 @@ enum FocusIntegrationChecks {
         model.selectPreset(minutes: 1)
         model.startPause()
         now.addTimeInterval(15)
-        let restored = FocusModel(defaults: defaults, environment: [:], store: store,
+        let restored = FocusModel(defaults: defaults, store: store,
                                   clock: { now }, scheduler: NoopNotificationScheduler())
         restored.tick()
         precondition(Int(restored.engine.elapsed) == 15)
@@ -74,7 +80,7 @@ private final class FocusCheckFixture {
     var now = Date(timeIntervalSince1970: 1_800_000_000)
     let store = SwiftDataSessionStore.inMemory()
     func model(store: SessionStore? = nil) -> FocusModel {
-        FocusModel(defaults: defaults, environment: [:], store: store ?? self.store,
+        FocusModel(defaults: defaults, store: store ?? self.store,
                    clock: { [unowned self] in self.now }, scheduler: NoopNotificationScheduler())
     }
     func clean() { defaults.removePersistentDomain(forName: name) }
@@ -125,7 +131,7 @@ extension FocusIntegrationChecks {
             let m = f.model(); m.selectPreset(minutes: 1); m.startPause()
             let snapshot = f.defaults.data(forKey: FocusModel.DefaultsKey.activeTimer)!
             f.now.addTimeInterval(60); m.tick()
-            // Simulate a crash after DB commit but before clearing the active snapshot.
+            // 模拟数据库已提交、计时快照尚未清除时崩溃。
             f.defaults.set(snapshot, forKey: FocusModel.DefaultsKey.activeTimer)
             let restored = f.model()
             check(restored.sessions.count == 1, "crash replay keeps stable session identity")
@@ -225,7 +231,7 @@ extension FocusIntegrationChecks {
             let f = FocusCheckFixture(); defer { f.clean() }
             let original = f.model(); original.selectPreset(minutes: 1); original.startPause()
             f.now.addTimeInterval(65)
-            _ = f.model() // recovery commits history, but app exits before binding the pet bridge
+            _ = f.model() // 恢复历史后、绑定桌宠事件前退出。
             let restarted = f.model(); let controller = IntegratedFocusController(model: restarted)
             var events = 0
             controller.onEvent = { if case .completed = $0 { events += 1 } }
@@ -265,7 +271,7 @@ extension FocusIntegrationChecks {
             f.now.addTimeInterval(60); m.tick()
             let session = m.sessions[0]
             try! first.append(session)
-            check((try? first.container.mainContext.fetchCount(FetchDescriptor<SessionRecord>())) == 1,
+            check((try? first.container?.mainContext.fetchCount(FetchDescriptor<SessionRecord>())) == 1,
                   "SwiftData duplicate append creates one physical row")
             let reloaded = SwiftDataSessionStore.openOnDisk(directory: dir)
             check(reloaded.isPersistent && (try? reloaded.load().count) == 1, "history survives a fresh on-disk container")
@@ -273,10 +279,50 @@ extension FocusIntegrationChecks {
         do {
             let f = FocusCheckFixture(); defer { f.clean() }
             let m = f.model(); m.startPause()
-            // Crash between writing the new timer snapshot and clearing the prior break.
+            // 模拟新计时快照已写入、旧休息尚未清除时崩溃。
             f.defaults.set(f.now.addingTimeInterval(30), forKey: "foy.restEnd")
             let recovered = IntegratedFocusController(model: f.model())
             check(recovered.isFocusing && recovered.restEnd == nil, "active timer recovery takes precedence over stale break snapshot")
+        }
+        do {
+            let f = FocusCheckFixture(); defer { f.clean() }
+            let m = f.model(); m.selectPreset(minutes: 1); m.startPause()
+            f.now.addTimeInterval(3600)
+            let controller = IntegratedFocusController(model: f.model())
+            controller.breakMinutes = { 1 }
+            var completions = 0, rests = 0
+            controller.onEvent = { event in
+                if case .completed = event { completions += 1 }
+                if case .restDone = event { rests += 1 }
+            }
+            controller.tick(); controller.tick()
+            check(completions == 1 && rests == 0 && controller.restEnd == nil,
+                  "expired recovered break never emits rest done")
+        }
+        do {
+            let dir = FileManager.default.temporaryDirectory.appendingPathComponent("hebiu-unreadable-" + UUID().uuidString)
+            try! FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            defer { try? FileManager.default.removeItem(at: dir) }
+            let url = dir.appendingPathComponent(SwiftDataSessionStore.fileName)
+            let original = Data("unrecognized store: preserve for recovery".utf8)
+            try! original.write(to: url)
+            let store = SwiftDataSessionStore.openOnDisk(directory: dir)
+            check(!store.isPersistent && (try? Data(contentsOf: url)) == original,
+                  "unclassified open failure preserves original database")
+            check((try? FileManager.default.contentsOfDirectory(atPath: dir.path))?.contains(where: { $0.contains(".corrupt-") }) == false,
+                  "unclassified open failure does not rename store files")
+        }
+        do {
+            let store = SwiftDataSessionStore.inMemory(makeContainer: {
+                throw NSError(domain: "模拟内存库创建失败", code: 1)
+            })
+            let f = FocusCheckFixture(); defer { f.clean() }
+            let m = f.model(store: store); m.selectPreset(minutes: 1); m.startPause()
+            f.now.addTimeInterval(60); m.tick()
+            let session = m.sessions[0]
+            try! store.append(session)
+            check(!store.isPersistent && store.container == nil && (try? store.load().count) == 1,
+                  "memory container failure retains deduplicated records without crashing")
         }
         if !failures.isEmpty {
             print("REGRESSION FAILURES: \(failures.count)")

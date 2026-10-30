@@ -887,11 +887,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, SettingsHost {
     @objc private func quit() { NSApp.terminate(nil) }
 }
 
-if ProcessInfo.processInfo.environment["HEBIU_FOCUS_SELF_TEST"] == "1" {
-    MainActor.assumeIsolated { FocusIntegrationChecks.run() }
-    exit(0)
-}
-
 // 带参数就是命令行工具，做完就退出
 if let code = CLI.run(Array(CommandLine.arguments.dropFirst())) {
     exit(code)

@@ -3,7 +3,7 @@ import Combine
 import HebiuKit
 import SwiftUI
 
-/// Shared by SwiftUI views and AppKit bubbles. Stored with Hebiu's other local data.
+/// SwiftUI 页面与 AppKit 气泡共用，和其他 Hebiu 数据一起存放。
 final class TypographySettings: ObservableObject {
     static let shared = TypographySettings()
     static let families = NSFontManager.shared.availableFontFamilies

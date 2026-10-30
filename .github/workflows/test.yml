@@ -14,3 +14,6 @@ jobs:
 
       - name: 专注核心与整合回归
         run: bash scripts/test-focus.sh
+
+      - name: 专注与字体备份恢复
+        run: bash scripts/test-backup.sh

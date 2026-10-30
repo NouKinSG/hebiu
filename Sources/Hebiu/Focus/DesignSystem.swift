@@ -6,7 +6,7 @@ import AppKit
 import UIKit
 #endif
 
-// MARK: - Palette
+// MARK: - 配色
 
 extension Color {
     init(hex: UInt32, opacity: Double = 1) {
@@ -67,7 +67,7 @@ enum Layout {
 
 /// 黑白灰单色主题，跟随系统深浅色。所有颜色只从这里取。
 enum FocusTheme {
-    // Backgrounds
+    // 背景
     static let canvas = Color(nsColor: .windowBackgroundColor)
     static let surface = Color.adaptive(light: 0x000000, dark: 0xFFFFFF, lightOpacity: 0.04, darkOpacity: 0.06)
     static let surfaceStrong = Color.adaptive(light: 0x000000, dark: 0xFFFFFF, lightOpacity: 0.07, darkOpacity: 0.10)
@@ -84,7 +84,7 @@ enum FocusTheme {
     static let track = stroke
 }
 
-// MARK: - Typography
+// MARK: - 字体
 
 enum Typography {
     static var timer: Font { Font.hebiuSystem(size: 66, weight: .light, design: .default) }
@@ -97,7 +97,7 @@ enum Typography {
     static var caption: Font { Font.hebiuSystem(size: 11, weight: .regular, design: .default) }
 }
 
-// MARK: - App background
+// MARK: - 页面背景
 
 struct AppBackground: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -106,7 +106,7 @@ struct AppBackground: View {
     }
 }
 
-// MARK: - Surfaces
+// MARK: - 容器
 
 struct SurfaceBackground: ViewModifier {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -132,7 +132,7 @@ extension View {
     }
 }
 
-// MARK: - Primary button
+// MARK: - 主按钮
 
 struct PrimaryTimerButtonStyle: ButtonStyle {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -158,7 +158,7 @@ struct PrimaryTimerButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Circular icon button
+// MARK: - 圆形图标按钮
 
 struct CircleIconButtonStyle: ButtonStyle {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -182,7 +182,7 @@ struct CircleIconButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - App mark
+// MARK: - 应用标记
 
 /// 页眉里的品牌标记（日晷之人）：资源目录里的 `BrandMark`，由 `Scripts/make-icon.py` 生成，三端一致。
 struct AppMark: View {

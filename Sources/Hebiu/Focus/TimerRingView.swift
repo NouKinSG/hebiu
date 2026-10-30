@@ -68,7 +68,7 @@ struct TimerRingView: View {
 
     private var timeFont: Font {
         let size: CGFloat = engine.displaySeconds >= 3600 ? 53 : 66
-        // Keep digits readable and tabular even for decorative or symbol-only families.
+        // 使用装饰字体或符号字体时，计时数字仍保持清晰和等宽。
         return .system(size: size * appTypography.scale, weight: .light, design: .default)
     }
 

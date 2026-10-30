@@ -2,7 +2,7 @@ import Charts
 import FocusCore
 import SwiftUI
 
-// MARK: - Formatting
+// MARK: - 格式化
 
 enum DurationFormat {
     /// 数据卡：不足 1 小时显示整分钟，否则显示一位小数的小时。
@@ -44,7 +44,7 @@ enum DurationFormat {
     }
 }
 
-// MARK: - Range picker
+// MARK: - 范围选择
 
 struct RangePicker: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -81,7 +81,7 @@ struct RangePicker: View {
     }
 }
 
-// MARK: - Stat tile
+// MARK: - 统计卡片
 
 struct StatTile: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -121,7 +121,7 @@ struct StatTile: View {
     }
 }
 
-// MARK: - Bar chart
+// MARK: - 柱状图
 
 struct FocusBarChart: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -177,7 +177,7 @@ struct FocusBarChart: View {
     }
 }
 
-// MARK: - Session row
+// MARK: - 会话行
 
 struct SessionRow: View {
     @ObservedObject private var appTypography = TypographySettings.shared

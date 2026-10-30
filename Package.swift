@@ -15,5 +15,6 @@ let package = Package(
         .target(name: "HebiuKit"),
         .executableTarget(name: "Hebiu", dependencies: ["HebiuKit", .product(name: "FocusCore", package: "FocusCore")]),
         .testTarget(name: "HebiuKitTests", dependencies: ["HebiuKit"]),
+        .testTarget(name: "HebiuFocusTests", dependencies: ["Hebiu", "HebiuKit", .product(name: "FocusCore", package: "FocusCore")]),
     ]
 )

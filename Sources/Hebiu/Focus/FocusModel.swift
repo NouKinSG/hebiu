@@ -7,17 +7,6 @@ import FocusCore
 import Foundation
 import SwiftUI
 
-/// Mutable wall clock used only by demo/snapshot states, so the app can render
-/// a realistic mid-session UI without waiting. Production sessions keep offset 0.
-final class DemoClock {
-    static let shared = DemoClock()
-    var offset: TimeInterval = 0
-
-    func now() -> Date {
-        Date().addingTimeInterval(offset)
-    }
-}
-
 @MainActor
 final class FocusModel: ObservableObject {
     enum DefaultsKey {
@@ -26,22 +15,10 @@ final class FocusModel: ObservableObject {
         static let countdownSeconds = "foy.countdownSeconds"
         static let completedSessions = "foy.completedSessions"
         static let completionDay = "foy.completionDay"
-        static let legacyMigrationDone = "foy.legacyMigrationDone"
         static let dashboardVisible = "foy.dashboardVisible"
         static let activeTimer = "foy.activeTimer"
         static let pendingSessions = "foy.pendingSessions"
         static let completionOutbox = "foy.completionOutbox"
-    }
-
-    private enum LegacyDefaults {
-        static let suiteName = "com.lukaspeng.pomodoro"
-        static let keyMap: [(old: String, new: String)] = [
-            ("pomodoro.focusTitle", DefaultsKey.focusTitle),
-            ("pomodoro.mode", DefaultsKey.mode),
-            ("pomodoro.countdownSeconds", DefaultsKey.countdownSeconds),
-            ("pomodoro.completedSessions", DefaultsKey.completedSessions),
-            ("pomodoro.completionDay", DefaultsKey.completionDay),
-        ]
     }
 
     static var defaultDefaults: UserDefaults {
@@ -53,7 +30,6 @@ final class FocusModel: ObservableObject {
         return UserDefaults(suiteName: "io.github.hebiu.focus" + suffix)!
     }
     static let presets = [15, 25, 45, 60]
-    static let demoDefaultTitle = "把今天最重要的事做完"
 
     var onStart: (() -> Void)?
     var onCompleted: (() -> Void)?
@@ -71,7 +47,6 @@ final class FocusModel: ObservableObject {
     private let fallbackMemory: Bool
     var integrationDefaults: UserDefaults { defaults }
     let engine: TimerEngine
-    let isDemo: Bool
 
     @Published var focusTitle: String {
         didSet { persist(focusTitle, forKey: DefaultsKey.focusTitle) }
@@ -86,32 +61,20 @@ final class FocusModel: ObservableObject {
     }
 
     private let defaults: UserDefaults
-    private let environment: [String: String]
     private let store: SessionStore
     private let scheduler: NotificationScheduling
     private var recorder = SessionRecorder()
     private var terminationObserver: NSObjectProtocol?
-    private var didPrepareDemo = false
 
-    /// Storage and clock can be injected for isolated checks. Production history lives
-    /// under Hebiu's data directory; pet completion notifications belong to the controller.
+    /// 可注入存储与时钟进行隔离测试。正式历史放在 Hebiu 数据目录，桌宠通知交给控制器。
     init(
         defaults: UserDefaults = .standard,
-        environment: [String: String] = ProcessInfo.processInfo.environment,
         store: SessionStore? = nil,
         clock: (() -> Date)? = nil,
         scheduler: NotificationScheduling? = nil
     ) {
         self.defaults = defaults
-        self.environment = environment
-        let isDemo = environment["FOY_DEMO_STATE"] != nil
-            || environment["FOY_SNAPSHOT_DIR"] != nil
-        self.isDemo = isDemo
         self.scheduler = scheduler ?? NoopNotificationScheduler()
-
-        if !self.isDemo, defaults === UserDefaults.standard {
-            Self.migrateLegacyDefaultsIfNeeded(into: defaults)
-        }
 
         let savedMode = TimerMode(rawValue: defaults.string(forKey: DefaultsKey.mode) ?? "") ?? .countdown
         // 按 NSNumber 读：外部写入的 float / int 也能读到（`as? Double` 对 Float 存储会失败）
@@ -121,24 +84,14 @@ final class FocusModel: ObservableObject {
         self.engine = TimerEngine(
             mode: savedMode,
             countdownSeconds: safeSeconds,
-            now: clock ?? { DemoClock.shared.now() }
+            now: clock ?? Date.init
         )
 
-        let demoTitle = environment["FOY_DEMO_TITLE"]
-        self.focusTitle = defaults.string(forKey: DefaultsKey.focusTitle)
-            ?? demoTitle
-            ?? (environment["FOY_DEMO_STATE"] != nil ? Self.demoDefaultTitle : "")
+        self.focusTitle = defaults.string(forKey: DefaultsKey.focusTitle) ?? ""
         self.customMinutes = Int((safeSeconds / 60).rounded())
-
-        if self.isDemo {
-            self.store = store ?? InMemorySessionStore(seed: DemoSessions.make(now: Date()))
-            self.isDashboardVisible = environment["FOY_DEMO_STATE"]?.lowercased() == "dashboard"
-        } else {
-            self.store = store ?? Self.openProductionStore(defaults: defaults)
-            self.isDashboardVisible = defaults.object(forKey: DefaultsKey.dashboardVisible) as? Bool ?? true
-        }
-
-        self.fallbackMemory = store == nil && !isDemo && (self.store as? SwiftDataSessionStore)?.isPersistent == false
+        self.store = store ?? Self.openProductionStore()
+        self.isDashboardVisible = defaults.object(forKey: DefaultsKey.dashboardVisible) as? Bool ?? true
+        self.fallbackMemory = store == nil && (self.store as? SwiftDataSessionStore)?.isPersistent == false
         do {
             self.sessions = try self.store.load()
         } catch {
@@ -146,7 +99,7 @@ final class FocusModel: ObservableObject {
             self.sessions = []
         }
 
-        if !self.isDemo {
+        do {
             if let data = defaults.data(forKey: DefaultsKey.pendingSessions),
                let pending = try? JSONDecoder().decode([FocusCore.FocusSession].self, from: data) {
                 pendingSessions = pending
@@ -183,38 +136,19 @@ final class FocusModel: ObservableObject {
         if let terminationObserver { NotificationCenter.default.removeObserver(terminationObserver) }
     }
 
-    private static func openProductionStore(defaults: UserDefaults) -> SessionStore {
+    private static func openProductionStore() -> SessionStore {
         let directory = Paths.dataDir.appendingPathComponent("focus")
         return SwiftDataSessionStore.openOnDisk(directory: directory)
     }
 
-    // MARK: - Preferences
+    // MARK: - 偏好设置
 
-    /// 写入用户偏好的唯一入口：演示 / 截图模式下一律不写（不变量 3）。
-    /// 旧版迁移只在非演示模式下运行，单独直接写入。
+    /// 写入用户偏好的统一入口。
     private func persist(_ value: Any, forKey key: String) {
-        guard !isDemo else { return }
         defaults.set(value, forKey: key)
     }
 
-    // MARK: - Legacy settings
-
-    /// Copies the old `com.lukaspeng.pomodoro` preferences into the new
-    /// `com.lukaspeng.focusonyourself` domain exactly once. The legacy domain is
-    /// left untouched, and existing new-domain values always win.
-    private static func migrateLegacyDefaultsIfNeeded(into defaults: UserDefaults) {
-        guard !defaults.bool(forKey: DefaultsKey.legacyMigrationDone) else { return }
-        defer { defaults.set(true, forKey: DefaultsKey.legacyMigrationDone) }
-
-        guard let legacy = UserDefaults(suiteName: LegacyDefaults.suiteName) else { return }
-        for pair in LegacyDefaults.keyMap where defaults.object(forKey: pair.new) == nil {
-            if let value = legacy.object(forKey: pair.old) {
-                defaults.set(value, forKey: pair.new)
-            }
-        }
-    }
-
-    // MARK: - Derived state
+    // MARK: - 派生状态
 
     var durationMinutes: Int {
         max(1, Int((engine.countdownSeconds / 60).rounded()))
@@ -236,10 +170,10 @@ final class FocusModel: ObservableObject {
         stats.todayCompletedCount
     }
 
-    // MARK: - Commands
+    // MARK: - 操作
 
     func startPause() {
-        // A click can arrive after the deadline but before the next timer tick.
+        // 点击可能发生在截止时间之后、下一次计时更新之前。
         if engine.isRunning {
             tick()
             if engine.phase == .finished { return }
@@ -318,7 +252,7 @@ final class FocusModel: ObservableObject {
         tick()
     }
 
-    /// Called by the app's common-mode timer, independent of visible windows.
+    /// 由应用级计时器调用，不依赖窗口是否可见。
     func tick() {
         if engine.now() >= nextSaveRetry { retryPendingSaves() }
         if engine.tick() {
@@ -329,59 +263,7 @@ final class FocusModel: ObservableObject {
         }
     }
 
-    func prepareDemoIfNeeded() {
-        guard !didPrepareDemo else { return }
-        didPrepareDemo = true
-        guard let state = environment["FOY_DEMO_STATE"]?.lowercased() else { return }
-
-        focusTitle = environment["FOY_DEMO_TITLE"] ?? Self.demoDefaultTitle
-
-        switch state {
-        case "countdown", "running":
-            engine.setMode(.countdown)
-            engine.setCountdownSeconds(25 * 60)
-            beginSessionIfNeeded()
-            engine.start()
-            DemoClock.shared.offset = 9 * 60 + 18
-            tickWithoutCompletionSideEffects()
-
-        case "countup", "stopwatch":
-            engine.setMode(.countUp)
-            beginSessionIfNeeded()
-            engine.start()
-            DemoClock.shared.offset = 12 * 60 + 34
-            tickWithoutCompletionSideEffects()
-
-        case "paused":
-            engine.setMode(.countdown)
-            engine.setCountdownSeconds(25 * 60)
-            beginSessionIfNeeded()
-            engine.start()
-            DemoClock.shared.offset = 11 * 60 + 6
-            tickWithoutCompletionSideEffects()
-            engine.pause()
-
-        case "finished", "complete":
-            engine.setMode(.countdown)
-            engine.setCountdownSeconds(25 * 60)
-            beginSessionIfNeeded()
-            engine.start()
-            DemoClock.shared.offset = 25 * 60 + 4
-            tickWithoutCompletionSideEffects()
-
-        case "dashboard":
-            // 侧栏展开、计时器空闲；时长同 idle 固定 25 分钟
-            engine.setMode(.countdown)
-            engine.setCountdownSeconds(25 * 60)
-
-        default:
-            // 空闲态也固定 25 分钟，避免演示截图受真实用户设置影响
-            engine.setMode(.countdown)
-            engine.setCountdownSeconds(25 * 60)
-        }
-    }
-
-    // MARK: - Sessions
+    // MARK: - 会话记录
 
     /// 从 idle / finished 开始时创建会话；暂停后继续沿用同一条。
     private func beginSessionIfNeeded() {
@@ -396,22 +278,21 @@ final class FocusModel: ObservableObject {
     /// 在 engine 归零（重置 / 切模式 / 改时长）或退出之前调用；判定见
     /// `SessionRecorder.finalize`。可重复调用。
     private func finalizeActiveSession() {
-        tick() // Settle completion and emit its event before recorder finalization.
+        tick() // 结算记录前先处理到点完成及其事件。
         save(recorder.finalize(engine: engine, title: focusTitle))
     }
 
     private func save(_ session: FocusCore.FocusSession?) {
         guard let session else { return }
-        // Stable IDs make replay after DB commit / snapshot cleanup idempotent.
+        // 稳定标识保证数据库提交后、快照清理前的重放不会重复记账。
         if !sessions.contains(where: { $0.id == session.id }) { sessions.append(session) }
         if !pendingSessions.contains(where: { $0.id == session.id }) { pendingSessions.append(session) }
         statsClock = engine.now()
-        persistPendingSessions() // Journal before clearing the active timer snapshot.
+        persistPendingSessions() // 清除计时快照前先保存待写入记录。
         retryPendingSaves()
     }
 
     private func persistPendingSessions() {
-        guard !isDemo else { return }
         if pendingSessions.isEmpty { defaults.removeObject(forKey: DefaultsKey.pendingSessions) }
         else if let data = try? JSONEncoder().encode(pendingSessions) {
             defaults.set(data, forKey: DefaultsKey.pendingSessions)
@@ -438,7 +319,6 @@ final class FocusModel: ObservableObject {
     }
 
     private func persistCompletionOutbox() {
-        guard !isDemo else { return }
         if pendingCompletions.isEmpty { defaults.removeObject(forKey: DefaultsKey.completionOutbox) }
         else if let data = try? JSONEncoder().encode(pendingCompletions) { defaults.set(data, forKey: DefaultsKey.completionOutbox) }
     }
@@ -453,7 +333,7 @@ final class FocusModel: ObservableObject {
         persistCompletionOutbox()
     }
 
-    // MARK: - Active timer persistence
+    // MARK: - 计时快照
 
     /// 退出前结算进行中的会话并清掉快照，下次打开为空闲状态（Mac 正常退出路径）。
     func handleTermination() {
@@ -477,9 +357,8 @@ final class FocusModel: ObservableObject {
     }
 
     /// 把运行中 / 暂停的计时写入 `foy.activeTimer`；空闲或已完成时删除该键。
-    /// 只在状态变化时调用（不在 tick 里写）；演示模式不写（不变量 3）。
+    /// 只在状态变化时调用，不在计时更新中重复写入。
     private func saveActiveTimer() {
-        guard !isDemo else { return }
         guard let snapshot = engine.snapshot else {
             defaults.removeObject(forKey: DefaultsKey.activeTimer)
             return
@@ -510,21 +389,14 @@ final class FocusModel: ObservableObject {
         }
     }
 
-    // MARK: - Completion
-
-    private func tickWithoutCompletionSideEffects() {
-        if engine.tick() {
-            handleCompletion(notify: false)
-        }
-    }
+    // MARK: - 完成处理
 
     private func handleCompletion(notify: Bool = true) {
         // 结束时间用真实到点时刻：后台 / 关闭期间完成的一轮不会记成「下次打开的时刻」
         let endedAt = engine.finishedAt ?? engine.now()
         guard let session = recorder.finish(elapsed: engine.elapsed, title: focusTitle, at: endedAt, completed: true) else { return }
-        // Journal the event before clearing the timer snapshot. A second crash must not
-        // lose statistics/rest effects after the history record has already committed.
-        if !isDemo && !pendingCompletions.contains(where: { $0.session.id == session.id }) {
+        // 清除计时快照前保存事件，避免历史提交后的第二次崩溃丢失统计和休息联动。
+        if !pendingCompletions.contains(where: { $0.session.id == session.id }) {
             pendingCompletions.append(CompletionNotice(session: session, recovered: !notify))
             persistCompletionOutbox()
         }
@@ -534,7 +406,7 @@ final class FocusModel: ObservableObject {
         saveActiveTimer()
 
         // 即时提醒只经由注入的调度器发出：测试注入假实现时不会触达真实通知 / 提示音 / Dock
-        guard notify, !isDemo else { return }
+        guard notify else { return }
         scheduler.deliverCompletion(focusTitle: focusTitle)
         onCompleted?()
         onSessionCompleted?(session)

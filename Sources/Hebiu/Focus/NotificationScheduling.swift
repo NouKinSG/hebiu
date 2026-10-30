@@ -19,7 +19,7 @@ protocol NotificationScheduling: AnyObject {
     func deliverCompletion(focusTitle: String)
 }
 
-/// 演示模式与测试使用：什么也不做，绝不触达真实的通知、提示音或 Dock。
+/// Mac 由桌宠控制器提醒，测试也使用此空实现，不触达系统通知。
 @MainActor
 final class NoopNotificationScheduler: NotificationScheduling {
     func requestAuthorizationIfNeeded() {}

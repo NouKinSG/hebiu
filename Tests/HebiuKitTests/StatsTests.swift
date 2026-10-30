@@ -60,4 +60,18 @@ import Testing
         #expect(Stats(url: url).total()[.focus] == 1)
     }
 
+    @Test func 专注去重列表有上限_保留近期记录与历史计数() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("focus-bounded-" + UUID().uuidString + ".json")
+        defer { try? FileManager.default.removeItem(at: url) }
+        let ids = (0..<4096).map { _ in UUID() }
+        let json: [String: Any] = ["days": ["2026-10-25": ["focus": 5000]], "focusSessionIDs": ids.map(\.uuidString)]
+        try JSONSerialization.data(withJSONObject: json).write(to: url)
+        let stats = Stats(url: url), latest = UUID(), end = date("2026-10-26 12:00")
+        #expect(try stats.recordFocusCompletion(id: latest, at: end))
+        let saved = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+        #expect((saved["focusSessionIDs"] as? [String])?.count == 4096)
+        #expect(try !Stats(url: url).recordFocusCompletion(id: latest, at: end))
+        #expect(stats.total()[.focus] == 5001)
+    }
+
 }

@@ -1,7 +1,7 @@
 import FocusCore
 import SwiftUI
 
-// MARK: - Mode presentation
+// MARK: - 模式文字
 
 extension TimerMode {
     var displayName: String {
@@ -12,7 +12,7 @@ extension TimerMode {
     }
 }
 
-// MARK: - Timer panel
+// MARK: - 计时面板
 
 /// 计时栏：页眉、标题、模式切换、环形计时、时长预设、控制按钮、页脚。
 /// Mac 与 iPad 放在左栏，iPhone 作为「专注」标签页。
@@ -53,7 +53,7 @@ struct TimerPanel: View {
         .padding(.bottom, 22)
     }
 
-    // MARK: Header
+    // MARK: 页眉
 
     private var header: some View {
         HStack(spacing: 10) {
@@ -87,7 +87,7 @@ struct TimerPanel: View {
         .frame(height: 30)
     }
 
-    // MARK: Focus title
+    // MARK: 专注标题
 
     private var focusTitleCard: some View {
         HStack(spacing: 11) {
@@ -137,7 +137,7 @@ struct TimerPanel: View {
         .animation(.easeOut(duration: 0.18), value: titleFocused)
     }
 
-    // MARK: Mode switcher
+    // MARK: 模式切换
 
     private var modeSwitcher: some View {
         HStack(spacing: 3) {
@@ -170,7 +170,7 @@ struct TimerPanel: View {
         .overlay(Capsule(style: .continuous).strokeBorder(FocusTheme.stroke, lineWidth: 1))
     }
 
-    // MARK: Duration presets
+    // MARK: 时长预设
 
     private var presetRow: some View {
         Group {
@@ -232,7 +232,7 @@ struct TimerPanel: View {
         }
     }
 
-    // MARK: Controls
+    // MARK: 操作按钮
 
     private var controls: some View {
         HStack(spacing: 12) {
@@ -280,7 +280,7 @@ struct TimerPanel: View {
         }
     }
 
-    // MARK: Footer
+    // MARK: 页脚
 
     private var footer: some View {
         HStack {
@@ -295,7 +295,7 @@ struct TimerPanel: View {
     }
 }
 
-// MARK: - Status pill
+// MARK: - 状态标签
 
 struct StatusPill: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -334,7 +334,7 @@ struct StatusPill: View {
     }
 }
 
-// MARK: - Duration chip
+// MARK: - 时长按钮
 
 struct DurationChip: View {
     @ObservedObject private var appTypography = TypographySettings.shared
@@ -371,7 +371,7 @@ struct DurationChip: View {
     }
 }
 
-// MARK: - Custom duration popover
+// MARK: - 自定义时长弹窗
 
 struct CustomDurationEditor: View {
     @ObservedObject private var appTypography = TypographySettings.shared
