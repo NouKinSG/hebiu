@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 她 → 她记得的事：对你的了解、日记、周记月记；都能改、能删
 struct MemoryPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var agent: AgentController
     @ObservedObject var settings: SettingsModel
     @ObservedObject var nav: MainNavigation
@@ -14,7 +15,7 @@ struct MemoryPage: View {
             if !agent.enabled {
                 Card {
                     HStack {
-                        Text("记忆要用到 AI 大脑，先在「连接 → AI 大脑」里打开。").font(.callout)
+                        Text("记忆要用到 AI 大脑，先在「连接 → AI 大脑」里打开。").font(.hebiuStyle(.callout))
                         Spacer()
                         Button("去打开") { nav.page = .brain }.buttonStyle(.borderedProminent)
                     }
@@ -34,7 +35,7 @@ struct MemoryPage: View {
                 HStack(spacing: 8) {
                     if agent.consolidating { ProgressView().controlSize(.small) }
                     Text(agent.consolidating ? "\(Her.she)在翻今天的事…" : agent.memoryMessage ?? "每天凌晨 4 点后整理前一天；电脑没开就在下次打开时补上")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     Spacer()
                     Button("写今天的日记") { agent.writeTodayDiary() }
                         .controlSize(.small).disabled(agent.consolidating || !agent.memoryOn)
@@ -45,7 +46,7 @@ struct MemoryPage: View {
 
             group("对你的了解", trailing: "\(agent.facts.count) / \(AgentMemory.maxFacts)") {
                 if agent.facts.isEmpty {
-                    Text("还没有。多和\(Her.she)聊聊，或者直接告诉\(Her.she)「记住，我……」").font(.callout).foregroundStyle(.secondary)
+                    Text("还没有。多和\(Her.she)聊聊，或者直接告诉\(Her.she)「记住，我……」").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 ForEach(Array(agent.facts.enumerated()), id: \.element) { i, fact in
@@ -72,7 +73,7 @@ struct MemoryPage: View {
 
             group("日记", trailing: agent.diaries.isEmpty ? nil : "\(agent.diaries.count) 篇") {
                 if agent.diaries.isEmpty {
-                    Text("还没有日记。今晚过后\(Her.she)会写第一篇，也可以点上面的「写今天的日记」先看看").font(.callout).foregroundStyle(.secondary)
+                    Text("还没有日记。今晚过后\(Her.she)会写第一篇，也可以点上面的「写今天的日记」先看看").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 let shown = showAllDiaries ? agent.diaries : Array(agent.diaries.prefix(14))
@@ -86,7 +87,7 @@ struct MemoryPage: View {
                 }
             }
 
-            Text("都存在 ~/.hebiu/agent/memory/，聊天时只带上「了解」和最近几天的日记").font(.caption).foregroundStyle(.secondary)
+            Text("都存在 ~/.hebiu/agent/memory/，聊天时只带上「了解」和最近几天的日记").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
         }
         .onAppear { agent.reloadMemory() }
     }
@@ -107,6 +108,7 @@ struct MemoryPage: View {
 }
 
 private struct FactRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let fact: String
     let onSave: (String) -> Void
     let onDelete: () -> Void
@@ -132,14 +134,15 @@ private struct FactRow: View {
 }
 
 private struct EntryRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let entry: AgentMemory.Entry
     let onDelete: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Text(label).font(.system(size: 12, weight: .semibold)).foregroundStyle(Theme.accent)
+            Text(label).font(.hebiuSystem(size: 12, weight: .semibold)).foregroundStyle(Theme.accent)
                 .monospacedDigit().frame(width: 84, alignment: .leading)
-            Text(entry.text).font(.callout).frame(maxWidth: .infinity, alignment: .leading)
+            Text(entry.text).font(.hebiuStyle(.callout)).frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
             Button(action: onDelete) { Image(systemName: "trash") }
                 .buttonStyle(.borderless).foregroundStyle(.secondary).help("删掉这篇")

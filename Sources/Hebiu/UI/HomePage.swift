@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 主页：打开就看到今天——她、在一起第几天、下一个提醒、今天的待办
 struct HomePage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var todos: TodoListModel
     @ObservedObject var settings: SettingsModel
     @ObservedObject var nav: MainNavigation
@@ -13,7 +14,7 @@ struct HomePage: View {
             let s = todos.sections
             Page(title: greeting(now), subtitle: TodoFormat.weekdayDate(now)) {
                 hero(now: now, today: s.today)
-                FocusCard(settings: settings)
+                FocusCard(settings: settings, nav: nav)
                 HabitsTodayCard(settings: settings, nav: nav)
                 MoodCard(settings: settings)
                 VStack(alignment: .leading, spacing: 8) {
@@ -28,9 +29,9 @@ struct HomePage: View {
                     } label: {
                         HStack(spacing: 4) {
                             Text(s.later.isEmpty ? "查看全部待办" : "查看全部待办（以后还有 \(s.later.count) 件）")
-                            Image(systemName: "chevron.right").font(.system(size: 10, weight: .semibold))
+                            Image(systemName: "chevron.right").font(.hebiuSystem(size: 10, weight: .semibold))
                         }
-                        .font(.callout)
+                        .font(.hebiuStyle(.callout))
                         .foregroundStyle(Theme.accent)
                     }
                     .buttonStyle(.plain)
@@ -62,7 +63,7 @@ struct HomePage: View {
                     if let days = settings.daysTogether {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text("在一起第").foregroundStyle(.secondary)
-                            Text("\(days)").font(.system(size: 34, weight: .heavy, design: .rounded))
+                            Text("\(days)").font(.hebiuSystem(size: 34, weight: .heavy, design: .rounded))
                                 .foregroundStyle(Theme.accent).monospacedDigit()
                             Text("天").foregroundStyle(.secondary)
                         }
@@ -71,22 +72,22 @@ struct HomePage: View {
                             Label("填上在一起的日子", systemImage: "heart").foregroundStyle(Theme.accent)
                         }
                         .buttonStyle(.plain)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.hebiuSystem(size: 15, weight: .semibold))
                     }
                     if let w = settings.weather {
                         Label(w.line + (w.advice.first.map { " · " + $0 } ?? ""), systemImage: "cloud.sun")
-                            .font(.callout).lineLimit(1)
+                            .font(.hebiuStyle(.callout)).lineLimit(1)
                     }
                     if let soon = settings.allDates.first(where: { $0.days <= 30 }) {
                         Label(soon.days == 0 ? "今天是\(soon.date.title)" : "距离\(soon.date.title)还有 \(soon.days) 天", systemImage: "calendar")
-                            .font(.callout).foregroundStyle(soon.days <= 7 ? Theme.accent : Color.primary).lineLimit(1)
+                            .font(.hebiuStyle(.callout)).foregroundStyle(soon.days <= 7 ? Theme.accent : Color.primary).lineLimit(1)
                     }
                     if let next, let due = next.due {
                         Label("下一个提醒：\(TodoFormat.describe(due, hasTime: true)) \(next.title)", systemImage: "alarm")
-                            .font(.callout).lineLimit(1)
+                            .font(.hebiuStyle(.callout)).lineLimit(1)
                     } else {
                         Label(today.isEmpty ? "今天没有待办" : "今天还有 \(today.count) 件事，没有定时的", systemImage: "alarm")
-                            .font(.callout).foregroundStyle(.secondary)
+                            .font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                     }
                 }
                 Spacer(minLength: 0)
@@ -113,7 +114,7 @@ struct HomePage: View {
     private func chip(icon: String, text: String, active: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(text, systemImage: icon)
-                .font(.caption)
+                .font(.hebiuStyle(.caption))
                 .foregroundStyle(active ? Theme.accent : Color.secondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -125,6 +126,7 @@ struct HomePage: View {
 
 /// 一排小数字：摸了她几下、陪你干完几次活……主页显示今天的，「我们」页显示一共的
 struct StatsTiles: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let day: Stats.Day
 
     private static let items: [(Stats.Counter, String, String)] = [
@@ -139,11 +141,11 @@ struct StatsTiles: View {
         HStack(spacing: 10) {
             ForEach(StatsTiles.items, id: \.0) { counter, title, unit in
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.caption).foregroundStyle(.secondary)
+                    Text(title).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     HStack(alignment: .firstTextBaseline, spacing: 3) {
-                        Text("\(day[counter] ?? 0)").font(.system(size: 22, weight: .bold, design: .rounded))
+                        Text("\(day[counter] ?? 0)").font(.hebiuSystem(size: 22, weight: .bold, design: .rounded))
                             .foregroundStyle((day[counter] ?? 0) > 0 ? Theme.accent : Color.secondary).monospacedDigit()
-                        Text(unit).font(.caption).foregroundStyle(.secondary)
+                        Text(unit).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -157,56 +159,19 @@ struct StatsTiles: View {
 
 /// 番茄钟卡片：没开时一个按钮；专心中显示倒计时和进度；休息中显示还能歇多久
 struct FocusCard: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
-
+    @ObservedObject var nav: MainNavigation
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            let now = context.date
-            let phase = settings.focus?.phase ?? .idle
-            let left = FocusSession.clock(settings.focus?.remaining(now: now) ?? 0)
-            Card(padding: 14) {
-                HStack(spacing: 14) {
-                    Text("🍅").font(.system(size: 26))
-                    switch phase {
-                    case .idle:
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("番茄钟").font(.headline)
-                            Text("专心 \(settings.focusMinutes) 分钟，\(Her.she)安静陪着；到点叫你休息 \(settings.breakMinutes) 分钟")
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Button("开始专心") { settings.startFocus() }.buttonStyle(.borderedProminent)
-                    case .focus:
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Text("专心中").font(.headline)
-                                Text(left).font(.system(size: 22, weight: .bold, design: .rounded)).monospacedDigit()
-                                    .foregroundStyle(Theme.accent)
-                            }
-                            ProgressView(value: settings.focus?.progress(now: now) ?? 0).tint(Theme.accent)
-                        }
-                        Button("结束") { settings.stopFocus() }
-                    case .rest:
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Text("休息一下").font(.headline)
-                                Text(left).font(.system(size: 22, weight: .bold, design: .rounded)).monospacedDigit()
-                                    .foregroundStyle(.secondary)
-                            }
-                            Text("起来走走、喝口水，看看远处").font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Button("跳过休息") { settings.stopFocus() }
-                        Button("再来一个") { settings.startFocus() }.buttonStyle(.borderedProminent)
-                    }
-                }
-            }
+        if let focus = settings.focus {
+            IntegratedFocusCard(focus: focus, open: { nav.page = .focus })
         }
     }
 }
 
 /// 今天的心情：五个表情点一个
 struct MoodCard: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
 
     var body: some View {
@@ -214,15 +179,15 @@ struct MoodCard: View {
         Card(padding: 12) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("今天心情").font(.headline)
+                    Text("今天心情").font(.hebiuStyle(.headline))
                     Text(today.map { $0.note.isEmpty ? $0.name : "\($0.name) · \($0.note)" } ?? "点一个，\(Her.she)会记进日记")
-                        .font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                        .font(.hebiuStyle(.caption)).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer()
                 ForEach(Mood.levels, id: \.score) { level in
                     let picked = today?.score == level.score
                     Button { settings.logMood(level.score) } label: {
-                        Text(level.emoji).font(.system(size: picked ? 26 : 22))
+                        Text(level.emoji).font(.hebiuSystem(size: picked ? 26 : 22))
                             .opacity(today == nil || picked ? 1 : 0.35)
                             .frame(width: 38, height: 38)
                             .background(Circle().fill(picked ? Theme.accent.opacity(0.18) : Color.clear))

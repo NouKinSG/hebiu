@@ -13,6 +13,7 @@ enum Theme {
 
 /// 每一页统一的外框：大标题 + 一行说明 + 内容，内容最宽 640，居中
 struct Page<Content: View>: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let title: String
     var subtitle: String? = nil
     var trailing: AnyView? = nil
@@ -23,9 +24,9 @@ struct Page<Content: View>: View {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(title).font(.system(size: 26, weight: .bold))
+                        Text(title).font(.hebiuSystem(size: 26, weight: .bold))
                         if let subtitle {
-                            Text(subtitle).font(.callout).foregroundStyle(.secondary)
+                            Text(subtitle).font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         }
                     }
                     Spacer()
@@ -42,6 +43,7 @@ struct Page<Content: View>: View {
 
 /// 卡片：浅一层的底 + 细边，把一组东西收在一起
 struct Card<Content: View>: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     var padding: CGFloat = 16
     @ViewBuilder let content: Content
 
@@ -56,15 +58,16 @@ struct Card<Content: View>: View {
 
 /// 卡片上方的小标题
 struct SectionLabel: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let text: String
     var trailing: String? = nil
 
     var body: some View {
         HStack {
-            Text(text).font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+            Text(text).font(.hebiuSystem(size: 12, weight: .semibold)).foregroundStyle(.secondary)
             Spacer()
             if let trailing {
-                Text(trailing).font(.system(size: 12)).foregroundStyle(.secondary).monospacedDigit()
+                Text(trailing).font(.hebiuSystem(size: 12)).foregroundStyle(.secondary).monospacedDigit()
             }
         }
         .padding(.horizontal, 4)
@@ -73,6 +76,7 @@ struct SectionLabel: View {
 
 /// 卡片里的一行设置：左边标题和说明，右边控件
 struct SettingRow<Control: View>: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let title: String
     var detail: String? = nil
     /// 上一行开关下面的子选项：缩进、字小一号
@@ -82,9 +86,9 @@ struct SettingRow<Control: View>: View {
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(sub ? .callout : .body).foregroundStyle(sub ? Color.secondary : Color.primary)
+                Text(title).font(sub ? .hebiuStyle(.callout) : .hebiuStyle(.body)).foregroundStyle(sub ? Color.secondary : Color.primary)
                 if let detail {
-                    Text(detail).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    Text(detail).font(.hebiuStyle(.caption)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
             }
             Spacer(minLength: 16)
@@ -119,6 +123,7 @@ enum PetImages {
 }
 
 struct PetThumb: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let frame: String
     var size: CGFloat = 72
 

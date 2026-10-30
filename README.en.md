@@ -9,7 +9,7 @@
 
 Codes with you · remembers for you · calls you on time · wears any look you like
 
-[![test](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml/badge.svg)](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-8CC7A1)](LICENSE) [![macOS](https://img.shields.io/badge/macOS-13%2B-3B2F35?logo=apple&logoColor=white)](#quick-start) [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](Package.swift) [![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8CC7A1)](#with-claude-code--codex)
+[![test](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml/badge.svg)](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-8CC7A1)](LICENSE) [![macOS](https://img.shields.io/badge/macOS-14%2B-3B2F35?logo=apple&logoColor=white)](#quick-start) [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](Package.swift) [![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8CC7A1)](#with-claude-code--codex)
 
 [Quick start](#quick-start) · [Make a character](docs/CHARACTERS.md) · [FAQ](#faq) · [Contributing](CONTRIBUTING.md)
 
@@ -40,7 +40,7 @@ Hebiu is a little character that lives in the corner of your screen. While Claud
 
 ## Quick start
 
-Requires macOS 13+ and the Xcode command line tools (`xcode-select --install`).
+Requires macOS 14+ and the Xcode command line tools (`xcode-select --install`).
 
 ```bash
 git clone https://github.com/NouKinSG/hebiu.git
@@ -92,7 +92,7 @@ Can't draw? **Turn a photo or a description into a character with a local AI mod
 <details>
 <summary><b>Mac only?</b></summary>
 
-Yes. The UI is AppKit / SwiftUI and needs macOS 13+ (Apple silicon or Intel). The character pack, config files and hook format are platform-neutral, so other platforms could reuse them later.
+Yes. The UI is AppKit / SwiftUI and needs macOS 14+ (Apple silicon or Intel). The character pack, config files and hook format are platform-neutral, so other platforms could reuse them later.
 </details>
 
 <details>

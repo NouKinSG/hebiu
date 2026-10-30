@@ -6,6 +6,7 @@
 
 ```bash
 make test          # 单元测试（不碰你的 ~/.hebiu）
+bash scripts/test-focus.sh  # 专注核心与应用整合回归
 make install-dev   # 改完代码后快速重装，只编本机架构
 make help          # 全部命令
 ```

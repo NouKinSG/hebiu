@@ -14,7 +14,7 @@ protocol SettingsHost: AnyObject {
     /// Claude 各事件最近一次收到的时间
     var claudeActivity: [String: Date] { get }
     var stats: Stats { get }
-    var focus: FocusSession { get }
+    var focus: IntegratedFocusController { get }
     func startFocus(minutes: Int?)
     func previewAction(_ action: CharacterPack.Action)
     func characterChanged()
@@ -210,7 +210,7 @@ final class SettingsModel: ObservableObject {
     var claudeActivity: [String: Date] { host?.claudeActivity ?? [:] }
     func statsToday(_ now: Date = Date()) -> Stats.Day { host?.stats.day(now) ?? [:] }
     var statsTotal: Stats.Day { host?.stats.total() ?? [:] }
-    var focus: FocusSession? { host?.focus }
+    var focus: IntegratedFocusController? { host?.focus }
     func previewAction(_ action: CharacterPack.Action) { host?.previewAction(action) }
     func characterChanged() { host?.characterChanged(); objectWillChange.send() }
     var photoCount: Int { host?.photoCount ?? 0 }
