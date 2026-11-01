@@ -4,11 +4,12 @@ import SwiftUI
 
 /// 主窗口里的页面。加新功能：在这里加一个 case，归到某个分组里，再写一个页面
 enum MainPage: String, CaseIterable, Identifiable {
-    case home, chat, todos, habits, notes, review, actions, lines, us, persona, memory, sources, brain, tasks, claude, settings
+    case home, focus, chat, todos, habits, notes, review, actions, lines, us, persona, memory, sources, brain, tasks, claude, settings
     var id: String { rawValue }
 
     var title: String {
         switch self {
+        case .focus: return "专注"
         case .home: return "主页"
         case .chat: return "聊天"
         case .persona: return "人设"
@@ -30,6 +31,7 @@ enum MainPage: String, CaseIterable, Identifiable {
 
     var icon: String {
         switch self {
+        case .focus: return "timer"
         case .home: return "house"
         case .chat: return "bubble.left.and.bubble.right"
         case .persona: return "person.text.rectangle"
@@ -51,7 +53,7 @@ enum MainPage: String, CaseIterable, Identifiable {
 
     /// 侧边栏分组：天天用的放「日常」，和她有关的放「她」，接外面数据的放「连接」，设一次就不管的放「设置」
     static let sidebar: [(title: String, pages: [MainPage])] = [
-        ("日常", [.home, .chat, .todos, .habits, .notes, .review]),
+        ("日常", [.home, .focus, .chat, .todos, .habits, .notes, .review]),
         ("\(Her.she)", [.actions, .lines, .persona, .memory, .us]),
         ("连接", [.brain, .tasks, .sources, .claude]),
     ]
@@ -62,6 +64,7 @@ final class MainNavigation: ObservableObject {
 }
 
 struct MainView: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var nav: MainNavigation
     @ObservedObject var todos: TodoListModel
     @ObservedObject var settings: SettingsModel
@@ -79,6 +82,7 @@ struct MainView: View {
                 .background(Color(nsColor: .windowBackgroundColor))
         }
         .ignoresSafeArea()
+        .font(.hebiuStyle(.body))
         .tint(Theme.accent)
         // 打勾、删除后的「撤销」和编辑弹窗放在窗口层，主页和待办页都能用
         .overlay(alignment: .bottom) {
@@ -92,6 +96,8 @@ struct MainView: View {
     @ViewBuilder
     private var detail: some View {
         switch nav.page {
+        case .focus:
+            if let focus = settings.focus { IntegratedFocusPage(focus: focus) }
         case .home: HomePage(todos: todos, settings: settings, nav: nav)
         case .chat: ChatPage(agent: agent, nav: nav)
         case .persona: PersonaPage()
@@ -114,6 +120,7 @@ struct MainView: View {
 
 /// 侧边栏：头像 + 分组 + 底部设置。选中的一项用浅粉底
 private struct Sidebar: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var nav: MainNavigation
     let todayCount: Int
 
@@ -121,15 +128,17 @@ private struct Sidebar: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
                 PetThumb(frame: "idle", size: 32)
-                Text(Her.name).font(.system(size: 15, weight: .bold))
+                Text(Her.name).font(.hebiuSystem(size: 15, weight: .bold))
             }
             .padding(.horizontal, 14)
             .padding(.top, 46)                 // 红绿灯按钮下面
             .padding(.bottom, 14)
 
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 0) {
             ForEach(MainPage.sidebar, id: \.title) { group in
                 Text(group.title)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.hebiuSystem(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
@@ -140,7 +149,9 @@ private struct Sidebar: View {
                     }
                 }
             }
-            Spacer()
+                }
+            }
+            .scrollIndicators(.hidden)
             Divider().padding(.horizontal, 12)
             SidebarRow(page: .settings, selected: nav.page == .settings, badge: nil) { nav.page = .settings }
                 .padding(.vertical, 8)
@@ -149,6 +160,7 @@ private struct Sidebar: View {
 }
 
 private struct SidebarRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let page: MainPage
     let selected: Bool
     let badge: Int?
@@ -159,16 +171,16 @@ private struct SidebarRow: View {
         Button(action: action) {
             HStack(spacing: 9) {
                 Image(systemName: page.icon)
-                    .font(.system(size: 13))
+                    .font(.hebiuSystem(size: 13))
                     .frame(width: 18)
                     .foregroundStyle(selected ? Theme.accent : Color.secondary)
                 Text(page.title)
-                    .font(.system(size: 13, weight: selected ? .semibold : .regular))
+                    .font(.hebiuSystem(size: 13, weight: selected ? .semibold : .regular))
                     .foregroundStyle(selected ? Theme.accent : Color.primary)
                 Spacer()
                 if let badge {
                     Text("\(badge)")
-                        .font(.system(size: 11, weight: .semibold)).monospacedDigit()
+                        .font(.hebiuSystem(size: 11, weight: .semibold)).monospacedDigit()
                         .foregroundStyle(selected ? Theme.accent : Color.secondary)
                 }
             }
@@ -246,6 +258,7 @@ final class MainWindowController: NSObject, NSWindowDelegate {
             window = w
         }
         NSApp.activate(ignoringOtherApps: true)
+        if page == .focus { window?.setContentSize(NSSize(width: 1060, height: 730)) }
         window?.makeKeyAndOrderFront(nil)
         // 系统会自动把光标放进第一个输入框；只有「快速加待办」和待办页才要它
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

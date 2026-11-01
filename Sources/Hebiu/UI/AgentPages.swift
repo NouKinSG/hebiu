@@ -4,6 +4,7 @@ import SwiftUI
 
 /// 日常 → 聊天：全部对话记录 + 输入框
 struct ChatPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var agent: AgentController
     @ObservedObject var nav: MainNavigation
 
@@ -13,14 +14,14 @@ struct ChatPage: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("聊天").font(.system(size: 26, weight: .bold))
+                            Text("聊天").font(.hebiuSystem(size: 26, weight: .bold))
                             Text(agent.enabled ? "跟\(Her.she)说一句，\(Her.she)会帮你记待办、查待办，也会陪你聊" : "AI 大脑还没打开")
-                                .font(.callout).foregroundStyle(.secondary)
+                                .font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                         }
                         if !agent.enabled {
                             Card {
                                 HStack {
-                                    Text("在「连接 → AI 大脑」里填好 DeepSeek 的 key 并打开，就能和\(Her.she)聊天了。").font(.callout)
+                                    Text("在「连接 → AI 大脑」里填好 DeepSeek 的 key 并打开，就能和\(Her.she)聊天了。").font(.hebiuStyle(.callout))
                                     Spacer()
                                     Button("去打开") { nav.page = .brain }.buttonStyle(.borderedProminent)
                                 }
@@ -53,7 +54,7 @@ struct ChatPage: View {
             }
             HStack(spacing: 10) {
                 TextField("跟\(Her.she)说点什么…（快捷键随时呼出：\(HotkeySpec(agent.hotkeyText)?.display ?? "")）", text: $agent.draft)
-                    .textFieldStyle(.plain).font(.system(size: 14))
+                    .textFieldStyle(.plain).font(.hebiuSystem(size: 14))
                     .onSubmit { agent.send() }
                     .disabled(agent.thinking)
                 MicButton(agent: agent, voice: agent.voice)
@@ -66,6 +67,7 @@ struct ChatPage: View {
 }
 
 private struct ChatLineView: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let line: AgentChatLog.Line
 
     var body: some View {
@@ -87,7 +89,7 @@ private struct ChatLineView: View {
             }
         default:
             Label(line.content, systemImage: line.role == "error" ? "exclamationmark.circle" : "checkmark.circle")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                 .padding(.leading, 50)
         }
     }
@@ -101,6 +103,7 @@ private struct ChatLineView: View {
 
 /// 连接 → AI 大脑：开关、key、花费、隐私说明
 struct BrainPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var agent: AgentController
     @ObservedObject var settings: SettingsModel
     @State private var keyInput = ""
@@ -147,12 +150,12 @@ struct BrainPage: View {
                     .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
                     Button("删除", role: .destructive) { agent.deleteKey(); keyMessage = "已删除" }
                 }
-                if let keyMessage { Text(keyMessage).font(.caption).foregroundStyle(.secondary) }
+                if let keyMessage { Text(keyMessage).font(.hebiuStyle(.caption)).foregroundStyle(.secondary) }
             }
 
             group("花费") {
                 SettingRow(title: "本月已花", detail: "按 DeepSeek 官方价格逐笔记账") {
-                    Text("¥ \(format(agent.monthSpent))").font(.system(size: 18, weight: .semibold)).monospacedDigit()
+                    Text("¥ \(format(agent.monthSpent))").font(.hebiuSystem(size: 18, weight: .semibold)).monospacedDigit()
                         .foregroundStyle(Theme.accent)
                 }
                 Divider()
@@ -187,7 +190,7 @@ struct BrainPage: View {
                     }
                     Label("待办备注、链接、合照、key、文件：不发", systemImage: "xmark.circle").foregroundStyle(.secondary)
                 }
-                .font(.callout)
+                .font(.hebiuStyle(.callout))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Divider()
                 SettingRow(title: "允许\(Her.she)看日历、GitLab 来的待办",
@@ -217,13 +220,14 @@ struct BrainPage: View {
 
 /// 她 → 人设：她怎么说话
 struct PersonaPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @State private var text = AgentPersona.load()
     @State private var saved = false
 
     var body: some View {
         Page(title: "人设", subtitle: "\(Her.she)怎么说话、有什么口头禅、怎么叫你。和\(Her.she)聊天时会带上") {
             TextEditor(text: $text)
-                .font(.system(size: 14))
+                .font(.hebiuSystem(size: 14))
                 .scrollContentBackground(.hidden)
                 .padding(12)
                 .frame(minHeight: 320)
@@ -232,7 +236,7 @@ struct PersonaPage: View {
             HStack {
                 Button("恢复默认") { text = AgentPersona.defaultText }
                 Spacer()
-                if saved { Text("已保存").font(.caption).foregroundStyle(.secondary) }
+                if saved { Text("已保存").font(.hebiuStyle(.caption)).foregroundStyle(.secondary) }
                 Button("保存") {
                     try? FileManager.default.createDirectory(at: Paths.dataDir, withIntermediateDirectories: true)
                     try? text.write(to: Paths.persona, atomically: true, encoding: .utf8)
@@ -240,13 +244,14 @@ struct PersonaPage: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
-            Text("存在 ~/.hebiu/persona.md，也可以直接改这个文件").font(.caption).foregroundStyle(.secondary)
+            Text("存在 ~/.hebiu/persona.md，也可以直接改这个文件").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
         }
     }
 }
 
 /// 近 7 天每天花了多少，按用途叠起来；同一个颜色深浅区分用途
 struct SpendWeekChart: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let week: [AgentLedger.DaySpend]
     private let height: CGFloat = 90
 
@@ -264,15 +269,15 @@ struct SpendWeekChart: View {
         let total = week.reduce(Decimal(0)) { $0 + $1.total }
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("近 7 天").font(.body)
+                Text("近 7 天").font(.hebiuStyle(.body))
                 Spacer()
-                Text("共 ¥ \(money(total))").font(.callout).foregroundStyle(.secondary).monospacedDigit()
+                Text("共 ¥ \(money(total))").font(.hebiuStyle(.callout)).foregroundStyle(.secondary).monospacedDigit()
             }
             HStack(alignment: .bottom, spacing: 10) {
                 ForEach(week, id: \.day) { day in
                     VStack(spacing: 4) {
                         Text(day.total > 0 ? money(day.total) : "")
-                            .font(.system(size: 10)).foregroundStyle(.secondary).monospacedDigit()
+                            .font(.hebiuSystem(size: 10)).foregroundStyle(.secondary).monospacedDigit()
                         VStack(spacing: 0) {
                             ForEach(AgentLedger.Purpose.allCases.reversed(), id: \.self) { p in
                                 let v = NSDecimalNumber(decimal: day.byPurpose[p] ?? 0).doubleValue
@@ -287,7 +292,7 @@ struct SpendWeekChart: View {
                         .background(alignment: .bottom) {
                             RoundedRectangle(cornerRadius: 4).fill(Color.secondary.opacity(0.08)).frame(height: day.total > 0 ? 0 : 2)
                         }
-                        Text(label(day.day)).font(.caption2).foregroundStyle(.secondary)
+                        Text(label(day.day)).font(.hebiuStyle(.caption2)).foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -297,7 +302,7 @@ struct SpendWeekChart: View {
                 ForEach(AgentLedger.Purpose.allCases, id: \.self) { p in
                     HStack(spacing: 5) {
                         RoundedRectangle(cornerRadius: 2).fill(Theme.accent.opacity(SpendWeekChart.shade(p))).frame(width: 10, height: 10)
-                        Text(p.title).font(.caption).foregroundStyle(.secondary)
+                        Text(p.title).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     }
                 }
                 Spacer()

@@ -75,6 +75,7 @@ final class PhotoPopup {
 }
 
 private struct PolaroidView: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let image: NSImage
     let caption: String
     let onTap: () -> Void
@@ -88,7 +89,7 @@ private struct PolaroidView: View {
                 .frame(width: side, height: side)
                 .clipped()
             Text(caption.isEmpty ? "♥" : caption)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .font(.hebiuSystem(size: 13, weight: .medium, design: .rounded))
                 .foregroundStyle(Color(red: 0.42, green: 0.36, blue: 0.38))
                 .padding(.bottom, 4)
         }

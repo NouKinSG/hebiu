@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 编辑一个动作：先做哪几下、最后停在哪一帧、停多久、说哪组台词、点她时出现得多不多；「试一下」马上演
 struct ActionEditor: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let event: String
     @ObservedObject var model: SettingsModel
     let onClose: () -> Void
@@ -35,11 +36,11 @@ struct ActionEditor: View {
             HStack(spacing: 14) {
                 PetThumb(frame: action.hold, size: 64)
                 VStack(alignment: .leading, spacing: 6) {
-                    TextField("名字", text: $title).textFieldStyle(.plain).font(.system(size: 20, weight: .bold))
-                    TextField("什么时候出现，比如：点\(Her.she)", text: $when).textFieldStyle(.plain).font(.callout).foregroundStyle(.secondary)
+                    TextField("名字", text: $title).textFieldStyle(.plain).font(.hebiuSystem(size: 20, weight: .bold))
+                    TextField("什么时候出现，比如：点\(Her.she)", text: $when).textFieldStyle(.plain).font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(event).font(.caption.monospaced()).foregroundStyle(.tertiary)
+                Text(event).font(.hebiuStyle(.caption).monospaced()).foregroundStyle(.tertiary)
             }
 
             ScrollView {
@@ -96,7 +97,7 @@ struct ActionEditor: View {
             }
             .frame(maxHeight: 440)
 
-            if let saveError { Text(saveError).font(.caption).foregroundStyle(Theme.overdue) }
+            if let saveError { Text(saveError).font(.hebiuStyle(.caption)).foregroundStyle(Theme.overdue) }
             HStack {
                 Button { model.previewAction(edited) } label: { Label("试一下", systemImage: "play.fill") }
                 Spacer()
@@ -146,8 +147,8 @@ struct ActionEditor: View {
     private func section<Content: View>(_ title: String, detail: String, @ViewBuilder _ content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(title).font(.system(size: 13, weight: .semibold))
-                Text(detail).font(.caption).foregroundStyle(.secondary)
+                Text(title).font(.hebiuSystem(size: 13, weight: .semibold))
+                Text(detail).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
             }
             content()
         }
@@ -155,6 +156,7 @@ struct ActionEditor: View {
 }
 
 private struct StepRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @Binding var step: CharacterPack.Step
     let onRemove: () -> Void
     let onUp: (() -> Void)?
@@ -173,6 +175,7 @@ private struct StepRow: View {
 
 /// 选一帧：点开是这个形象所有帧的缩略图
 struct FramePicker: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @Binding var frame: String
     @State private var open = false
 
@@ -180,8 +183,8 @@ struct FramePicker: View {
         Button { open = true } label: {
             HStack(spacing: 8) {
                 PetThumb(frame: frame, size: 38)
-                Text(frame).font(.callout.monospaced()).foregroundStyle(.primary)
-                Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold)).foregroundStyle(.secondary)
+                Text(frame).font(.hebiuStyle(.callout).monospaced()).foregroundStyle(.primary)
+                Image(systemName: "chevron.down").font(.hebiuSystem(size: 9, weight: .bold)).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 8).padding(.vertical, 4)
             .background(RoundedRectangle(cornerRadius: 8).fill(Color.secondary.opacity(0.1)))
@@ -194,7 +197,7 @@ struct FramePicker: View {
                         Button { frame = name; open = false } label: {
                             VStack(spacing: 2) {
                                 PetThumb(frame: name, size: 60)
-                                Text(name).font(.system(size: 10).monospaced()).lineLimit(1)
+                                Text(name).font(.hebiuSystem(size: 10).monospaced()).lineLimit(1)
                             }
                             .padding(4)
                             .background(RoundedRectangle(cornerRadius: 8).fill(name == frame ? Theme.accent.opacity(0.2) : Color.clear))
@@ -210,6 +213,7 @@ struct FramePicker: View {
 }
 
 private struct SecondsField: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @Binding var seconds: Double
     let range: ClosedRange<Double>
 
@@ -222,6 +226,7 @@ private struct SecondsField: View {
 }
 
 private struct EffectPicker: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @Binding var effect: String?
 
     var body: some View {

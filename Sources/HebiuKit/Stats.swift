@@ -16,6 +16,7 @@ public final class Stats {
 
     struct Body: Codable {
         var days: [String: [String: Int]] = [:]
+        var focusSessionIDs: [UUID]?
     }
 
     public let url: URL
@@ -31,6 +32,21 @@ public final class Stats {
         let day = MemoryDay.of(now)
         body.days[day, default: [:]][counter.rawValue, default: 0] += n
         scheduleSave()
+    }
+
+    /// 保留最近 4096 轮的去重标识；历史累计计数不裁剪，兼容旧版无序标识数组。
+    @discardableResult
+    public func recordFocusCompletion(id: UUID, at date: Date) throws -> Bool {
+        var ids = body.focusSessionIDs ?? []
+        guard !ids.contains(id) else { return false }
+        ids.append(id)
+        ids = Array(ids.suffix(4096))
+        let previous = body
+        body.focusSessionIDs = ids
+        body.days[MemoryDay.of(date), default: [:]][Counter.focus.rawValue, default: 0] += 1
+        do { try write() } // 会话标识与计数必须一同落盘。
+        catch { body = previous; throw error }
+        return true
     }
 
     public func day(_ date: Date = Date()) -> Day {
@@ -59,7 +75,11 @@ public final class Stats {
 
     public func save() {
         saveScheduled = false
-        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-        if let data = try? JSONEncoder().encode(body) { try? data.write(to: url, options: .atomic) }
+        try? write()
+    }
+
+    private func write() throws {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try JSONEncoder().encode(body).write(to: url, options: .atomic)
     }
 }

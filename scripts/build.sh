@@ -3,7 +3,7 @@
 # ARCH=native 只编本机架构（更快，开发时用）
 set -euo pipefail
 cd "$(dirname "$0")/.."
-APP=build/Hebiu.app
+APP=${APP_OUTPUT:-build/Hebiu.app}
 VERSION=$(cat VERSION)
 BUNDLE_ID=${BUNDLE_ID:-io.github.hebiu}
 
@@ -11,14 +11,14 @@ if [ "${ARCH:-universal}" = "native" ]; then
   swift build -c release --product Hebiu
   BIN=$(swift build -c release --product Hebiu --show-bin-path)/Hebiu
 else
-  for triple in arm64-apple-macosx13.0 x86_64-apple-macosx13.0; do
+  for triple in arm64-apple-macosx14.0 x86_64-apple-macosx14.0; do
     swift build -c release --product Hebiu --triple "$triple"
   done
   mkdir -p build
   BIN=build/Hebiu-universal
   lipo -create -output "$BIN" \
-    "$(swift build -c release --triple arm64-apple-macosx13.0 --show-bin-path)/Hebiu" \
-    "$(swift build -c release --triple x86_64-apple-macosx13.0 --show-bin-path)/Hebiu"
+    "$(swift build -c release --triple arm64-apple-macosx14.0 --show-bin-path)/Hebiu" \
+    "$(swift build -c release --triple x86_64-apple-macosx14.0 --show-bin-path)/Hebiu"
 fi
 
 rm -rf "$APP"
@@ -39,7 +39,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$VERSION</string>
-  <key>LSMinimumSystemVersion</key><string>13.0</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>LSUIElement</key><true/>
   <key>HebiuSourceDir</key><string>$PWD</string>
   <key>NSHighResolutionCapable</key><true/>

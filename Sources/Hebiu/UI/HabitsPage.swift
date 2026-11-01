@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 日常 → 习惯：每天打卡、连续天数、最近 7 天
 struct HabitsPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
     @State private var draft = ""
     @State private var hint: String?
@@ -21,15 +22,15 @@ struct HabitsPage: View {
                             Button("加上", action: add).controlSize(.small).disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                         if let hint {
-                            Text(hint).font(.caption).foregroundStyle(.secondary)
+                            Text(hint).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                         } else if let h = Habit.parse(draft) {
-                            Label("\(h.emoji) \(h.title) · \(h.detail)", systemImage: "flame").font(.caption).foregroundStyle(Theme.accent)
+                            Label("\(h.emoji) \(h.title) · \(h.detail)", systemImage: "flame").font(.hebiuStyle(.caption)).foregroundStyle(Theme.accent)
                         }
                     }
                 }
             }
             if list.isEmpty {
-                Text("还没有习惯。可以从「喝水 每天下午3点提醒」开始～").font(.callout).foregroundStyle(.secondary)
+                Text("还没有习惯。可以从「喝水 每天下午3点提醒」开始～").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
             }
             ForEach(list) { h in
                 HabitRow(settings: settings, habit: h)
@@ -45,6 +46,7 @@ struct HabitsPage: View {
 }
 
 private struct HabitRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
     let habit: Habit
 
@@ -59,24 +61,24 @@ private struct HabitRow: View {
                 Button { settings.checkHabit(habit.id) } label: {
                     ZStack {
                         Circle().fill(done ? Theme.accent : Color.secondary.opacity(0.12)).frame(width: 44, height: 44)
-                        Text(habit.emoji).font(.system(size: 22)).opacity(done ? 1 : 0.85)
+                        Text(habit.emoji).font(.hebiuSystem(size: 22)).opacity(done ? 1 : 0.85)
                     }
                 }
                 .buttonStyle(.plain)
                 .help(done ? "取消今天的打卡" : "打卡")
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
-                        Text(habit.title).font(.headline)
-                        if !scheduled { Text("今天不用").font(.caption).foregroundStyle(.secondary) }
+                        Text(habit.title).font(.hebiuStyle(.headline))
+                        if !scheduled { Text("今天不用").font(.hebiuStyle(.caption)).foregroundStyle(.secondary) }
                     }
-                    Text(habit.detail).font(.caption).foregroundStyle(.secondary)
+                    Text(habit.detail).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                 }
                 Spacer()
                 WeekDots(days: store?.week(habit.id) ?? [])
                 VStack(spacing: 0) {
-                    Text("\(streak)").font(.system(size: 20, weight: .bold, design: .rounded)).monospacedDigit()
+                    Text("\(streak)").font(.hebiuSystem(size: 20, weight: .bold, design: .rounded)).monospacedDigit()
                         .foregroundStyle(streak > 0 ? Theme.accent : Color.secondary)
-                    Text("连续").font(.caption2).foregroundStyle(.secondary)
+                    Text("连续").font(.hebiuStyle(.caption2)).foregroundStyle(.secondary)
                 }
                 .frame(width: 40)
                 Button { settings.deleteHabit(habit.id) } label: { Image(systemName: "trash") }
@@ -88,6 +90,7 @@ private struct HabitRow: View {
 
 /// 最近 7 天的小圆点：实心做了，空心没做，细线那天不用做
 struct WeekDots: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let days: [(day: String, done: Bool?)]
 
     var body: some View {
@@ -102,7 +105,7 @@ struct WeekDots: View {
                         }
                     }
                     .frame(width: 10, height: 10)
-                    Text(weekday(d.day)).font(.system(size: 9)).foregroundStyle(.tertiary)
+                    Text(weekday(d.day)).font(.hebiuSystem(size: 9)).foregroundStyle(.tertiary)
                 }
             }
         }
@@ -116,6 +119,7 @@ struct WeekDots: View {
 
 /// 主页上今天的习惯：一排胶囊，点一下打卡
 struct HabitsTodayCard: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var settings: SettingsModel
     @ObservedObject var nav: MainNavigation
 
@@ -129,8 +133,8 @@ struct HabitsTodayCard: View {
                         Button { settings.checkHabit(item.habit.id) } label: {
                             HStack(spacing: 6) {
                                 Text(item.habit.emoji)
-                                Text(item.habit.title).font(.callout)
-                                if item.done { Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)) }
+                                Text(item.habit.title).font(.hebiuStyle(.callout))
+                                if item.done { Image(systemName: "checkmark").font(.hebiuSystem(size: 10, weight: .bold)) }
                             }
                             .foregroundStyle(item.done ? Color.white : Color.primary)
                             .padding(.horizontal, 12).padding(.vertical, 7)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# 从 backup.sh 打的包恢复到 ~/.hebiu。恢复前会把现有的整个 ~/.hebiu 挪到一边，不会直接覆盖
+# 先退出 Hebiu，再从 backup.sh 打的包恢复到 ~/.hebiu。恢复前会把现有的整个 ~/.hebiu 挪到一边，不会直接覆盖
 # 用法：scripts/restore.sh <hebiu-backup-xxx.tar.gz>
 set -euo pipefail
 FILE="${1:?用法：scripts/restore.sh <备份文件>}"
@@ -13,5 +13,14 @@ if [ -d "$DATA" ]; then
 fi
 mkdir -p "$DATA"
 tar -xzf "$FILE" -C "$DATA"
+# 导入到当前数据目录对应的专注偏好域；必须退出 Hebiu 后恢复。
+if [ -f "$DATA/focus/preferences.plist" ]; then
+  DOMAIN=io.github.hebiu.focus
+  if [ -n "${HEBIU_HOME:-}" ]; then
+    DATA_PATH=$(cd "$DATA" && pwd -L)
+    DOMAIN="$DOMAIN.$(printf %s "$DATA_PATH" | base64 | tr '/+' '_-' | tr -d '\n')"
+  fi
+  /usr/bin/defaults import "$DOMAIN" "$DATA/focus/preferences.plist" >/dev/null
+fi
 touch "$DATA/events"
 echo "恢复好了：${DATA}（hebiu 会自动读到新的待办和设置；没反应就从菜单退出再打开）"

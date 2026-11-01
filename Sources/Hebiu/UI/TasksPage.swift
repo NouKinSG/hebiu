@@ -3,6 +3,7 @@ import SwiftUI
 
 /// 连接 → 定时让她做：到点了她结合今天的情况去做一件事
 struct TasksPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var agent: AgentController
     @ObservedObject var nav: MainNavigation
     @State private var draft = ""
@@ -19,7 +20,7 @@ struct TasksPage: View {
             if !agent.enabled {
                 Card {
                     HStack {
-                        Text("要用到 AI 大脑，先去打开。").font(.callout)
+                        Text("要用到 AI 大脑，先去打开。").font(.hebiuStyle(.callout))
                         Spacer()
                         Button("去打开") { nav.page = .brain }.buttonStyle(.borderedProminent)
                     }
@@ -34,21 +35,21 @@ struct TasksPage: View {
                         Button("加上", action: add).controlSize(.small).disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
                     if let hint {
-                        Text(hint).font(.caption).foregroundStyle(.secondary)
+                        Text(hint).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                     } else if let t = ScheduledTask.parse(draft) {
-                        Label("\(t.detail) · \(t.prompt)", systemImage: "alarm").font(.caption).foregroundStyle(Theme.accent)
+                        Label("\(t.detail) · \(t.prompt)", systemImage: "alarm").font(.hebiuStyle(.caption)).foregroundStyle(Theme.accent)
                     }
                     HStack(spacing: 6) {
-                        Text("试试：").font(.caption).foregroundStyle(.secondary)
+                        Text("试试：").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                         ForEach(examples, id: \.self) { e in
-                            Button(e) { draft = e }.buttonStyle(.borderless).font(.caption).foregroundStyle(Theme.accent)
+                            Button(e) { draft = e }.buttonStyle(.borderless).font(.hebiuStyle(.caption)).foregroundStyle(Theme.accent)
                         }
                     }
                 }
             }
             let list = agent.tasks.tasks
             if list.isEmpty {
-                Text("还没有定时任务").font(.callout).foregroundStyle(.secondary)
+                Text("还没有定时任务").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
             }
             ForEach(list) { task in
                 Card(padding: 14) {
@@ -57,7 +58,7 @@ struct TasksPage: View {
                             Image(systemName: "alarm").foregroundStyle(task.enabled ? Theme.accent : Color.secondary)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(task.prompt)
-                                Text(task.detail + (task.lastRun.map { " · 上次 \(MonthDay.text($0))" } ?? "")).font(.caption).foregroundStyle(.secondary)
+                                Text(task.detail + (task.lastRun.map { " · 上次 \(MonthDay.text($0))" } ?? "")).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
                             }
                             Spacer()
                             if trying == task.id { ProgressView().controlSize(.small) }
@@ -70,7 +71,7 @@ struct TasksPage: View {
                         if let r = results[task.id] {
                             HStack(alignment: .top, spacing: 10) {
                                 PetThumb(frame: "wave", size: 32)
-                                Text(r).font(.callout).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
+                                Text(r).font(.hebiuStyle(.callout)).fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
                             }
                             .padding(.leading, 28)
                         }

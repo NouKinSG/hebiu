@@ -157,6 +157,7 @@ final class TodoListModel: ObservableObject {
 // MARK: - 待办页
 
 struct TodoPage: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: TodoListModel
     @State private var showDone = false
 
@@ -195,9 +196,9 @@ struct TodoPage: View {
                 withAnimation(.easeOut(duration: 0.2)) { showDone.toggle() }
             } label: {
                 HStack(spacing: 4) {
-                    Image(systemName: "chevron.right").font(.system(size: 10, weight: .semibold))
+                    Image(systemName: "chevron.right").font(.hebiuSystem(size: 10, weight: .semibold))
                         .rotationEffect(.degrees(showDone ? 90 : 0))
-                    Text("已完成 \(done.count)").font(.system(size: 12, weight: .semibold))
+                    Text("已完成 \(done.count)").font(.hebiuSystem(size: 12, weight: .semibold))
                     Spacer()
                 }
                 .foregroundStyle(.secondary)
@@ -214,6 +215,7 @@ struct TodoPage: View {
 
 /// 加待办的输入框：页面的主角。可以直接写「明天下午三点 xxx」，也可以点下面的快捷按钮选时间
 struct TodoInput: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @ObservedObject var model: TodoListModel
     var placeholder = "加一条，比如：明天 10:00 交周报"
     var autoFocus = true
@@ -226,18 +228,18 @@ struct TodoInput: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 18))
+                    .font(.hebiuSystem(size: 18))
                     .foregroundStyle(Theme.accent)
                 TextField(placeholder, text: $model.draft)
                     .textFieldStyle(.plain)
-                    .font(.system(size: 15))
+                    .font(.hebiuSystem(size: 15))
                     .focused($focused)
                     .onSubmit { model.submit() }
                 if let when = model.draftWhen {
                     HStack(spacing: 4) {
-                        Image(systemName: model.draftRepeats ? "repeat" : "alarm").font(.system(size: 11, weight: .semibold))
-                        Text(when).font(.system(size: 12, weight: .medium)).monospacedDigit().lineLimit(1)
-                        Button { model.clearWhen() } label: { Image(systemName: "xmark").font(.system(size: 9, weight: .bold)) }
+                        Image(systemName: model.draftRepeats ? "repeat" : "alarm").font(.hebiuSystem(size: 11, weight: .semibold))
+                        Text(when).font(.hebiuSystem(size: 12, weight: .medium)).monospacedDigit().lineLimit(1)
+                        Button { model.clearWhen() } label: { Image(systemName: "xmark").font(.hebiuSystem(size: 9, weight: .bold)) }
                             .buttonStyle(.plain)
                             .help(model.whenFromText ? "不要这个时间，整句当标题" : "不定时间")
                     }
@@ -290,7 +292,7 @@ struct TodoInput: View {
                     Button(rule?.display ?? "不重复") { model.pickedRule = rule }
                 }
             } label: {
-                Label(model.pickedRule?.display ?? "重复", systemImage: "repeat").font(.system(size: 12))
+                Label(model.pickedRule?.display ?? "重复", systemImage: "repeat").font(.hebiuSystem(size: 12))
             }
             .menuStyle(.borderlessButton)
             .fixedSize()
@@ -304,6 +306,7 @@ struct TodoInput: View {
 
 /// 一个可选的小胶囊：选中时实心粉色
 struct ChoiceChip: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let title: String
     var icon: String? = nil
     let selected: Bool
@@ -312,10 +315,10 @@ struct ChoiceChip: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
-                if let icon { Image(systemName: icon).font(.system(size: 11)) }
+                if let icon { Image(systemName: icon).font(.hebiuSystem(size: 11)) }
                 Text(title)
             }
-                .font(.system(size: 12, weight: selected ? .semibold : .regular))
+                .font(.hebiuSystem(size: 12, weight: selected ? .semibold : .regular))
                 .lineLimit(1)
                 .fixedSize()
                 .monospacedDigit()
@@ -329,6 +332,7 @@ struct ChoiceChip: View {
 
 /// 几点：全天 09:00 14:00 18:00 20:00，不在里面的钟点单独显示一个，「其他…」打开选时间
 struct HourChips: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     /// nil 是全天
     let time: (hour: Int, minute: Int)?
     let onPick: ((hour: Int, minute: Int)?) -> Void
@@ -350,6 +354,7 @@ struct HourChips: View {
 
 /// 以后的待办：按日子分小段（明天、周五、11月6日……），收在一张卡片里
 struct LaterGroup: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let items: [TodoItem]
     @ObservedObject var model: TodoListModel
 
@@ -360,7 +365,7 @@ struct LaterGroup: View {
                 VStack(spacing: 0) {
                     ForEach(Array(days.enumerated()), id: \.element.title) { i, day in
                         if i > 0 { Divider() }
-                        Text(day.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
+                        Text(day.title).font(.hebiuSystem(size: 11, weight: .semibold)).foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 2)
                         ForEach(Array(day.items.enumerated()), id: \.element.id) { j, item in
@@ -385,6 +390,7 @@ struct LaterGroup: View {
 
 /// 一组待办，收在一张卡片里
 struct TodoGroup: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let title: String?
     let items: [TodoItem]
     @ObservedObject var model: TodoListModel
@@ -397,7 +403,7 @@ struct TodoGroup: View {
             Card(padding: 0) {
                 VStack(spacing: 0) {
                     if items.isEmpty, let empty {
-                        Text(empty).font(.callout).foregroundStyle(.secondary)
+                        Text(empty).font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(16)
                     }
@@ -413,6 +419,7 @@ struct TodoGroup: View {
 }
 
 struct TodoRow: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let item: TodoItem
     @ObservedObject var model: TodoListModel
     @State private var hovering = false
@@ -421,7 +428,7 @@ struct TodoRow: View {
         HStack(alignment: .center, spacing: 12) {
             Button { model.toggle(item) } label: {
                 Image(systemName: item.isDone ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18))
+                    .font(.hebiuSystem(size: 18))
                     .foregroundStyle(item.isDone ? Theme.accent : Color.secondary.opacity(0.7))
                     .contentShape(Circle())
             }
@@ -430,13 +437,13 @@ struct TodoRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.title)
-                    .font(.system(size: 14))
+                    .font(.hebiuSystem(size: 14))
                     .strikethrough(item.isDone, color: .secondary)
                     .foregroundStyle(item.isDone ? Color.secondary : Color.primary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .help(item.title)
-                if let detail { Text(detail).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+                if let detail { Text(detail).font(.hebiuStyle(.caption)).foregroundStyle(.secondary).lineLimit(1) }
             }
 
             Spacer(minLength: 8)
@@ -450,7 +457,7 @@ struct TodoRow: View {
                     Menu {
                         Button("推迟 1 小时") { model.postpone(item, by: 3600) }
                         Button("推迟到明天") { model.postpone(item, by: nil) }
-                    } label: { Image(systemName: "clock.arrow.circlepath").font(.system(size: 13)) }
+                    } label: { Image(systemName: "clock.arrow.circlepath").font(.hebiuSystem(size: 13)) }
                         .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
                         .foregroundStyle(.secondary).help("推迟")
                 }
@@ -481,7 +488,7 @@ struct TodoRow: View {
     }
 
     private func iconButton(_ icon: String, _ help: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) { Image(systemName: icon).font(.system(size: 13)) }
+        Button(action: action) { Image(systemName: icon).font(.hebiuSystem(size: 13)) }
             .buttonStyle(.borderless)
             .foregroundStyle(.secondary)
             .help(help)
@@ -504,12 +511,12 @@ struct TodoRow: View {
         return AnyView(
             HStack(spacing: 4) {
                 if let rule = RepeatRule(item.repeatRule) {
-                    Image(systemName: "repeat").font(.system(size: 9, weight: .bold))
+                    Image(systemName: "repeat").font(.hebiuSystem(size: 9, weight: .bold))
                     Text(rule.display + " ·")
                 }
                 Text((overdue ? "已过 " : "") + TodoFormat.describe(due, hasTime: item.dueHasTime))
             }
-                .font(.system(size: 11, weight: .medium))
+                .font(.hebiuSystem(size: 11, weight: .medium))
                 .monospacedDigit()
                 .foregroundStyle(color)
                 .padding(.horizontal, 8)
@@ -520,11 +527,12 @@ struct TodoRow: View {
 }
 
 private struct EmptyTodos: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     var body: some View {
         VStack(spacing: 10) {
             PetThumb(frame: "chin", size: 120)
-            Text("还没有待办").font(.headline)
-            Text("在上面写一句，到点了\(Her.she)会喊你").font(.callout).foregroundStyle(.secondary)
+            Text("还没有待办").font(.hebiuStyle(.headline))
+            Text("在上面写一句，到点了\(Her.she)会喊你").font(.hebiuStyle(.callout)).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
@@ -532,12 +540,13 @@ private struct EmptyTodos: View {
 }
 
 struct ToastBar: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     let toast: TodoListModel.Toast
     @ObservedObject var model: TodoListModel
 
     var body: some View {
         HStack(spacing: 16) {
-            Text(toast.text).font(.callout).lineLimit(1)
+            Text(toast.text).font(.hebiuStyle(.callout)).lineLimit(1)
             Button("撤销") {
                 if let id = toast.undoID { model.undo(id) } else { model.restoreDeleted() }
             }
@@ -556,6 +565,7 @@ struct ToastBar: View {
 
 /// 编辑一条（从那一条旁边弹出）：内容、哪天、几点、重复、备注、删除
 struct TodoEditor: View {
+    @ObservedObject private var appTypography = TypographySettings.shared
     @State var item: TodoItem
     let onSave: (TodoItem) -> Void
     let onCancel: () -> Void
@@ -569,7 +579,7 @@ struct TodoEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             TextField("要做什么", text: $item.title, axis: .vertical)
-                .textFieldStyle(.plain).font(.system(size: 15)).lineLimit(1...5)
+                .textFieldStyle(.plain).font(.hebiuSystem(size: 15)).lineLimit(1...5)
                 .padding(10)
                 .background(RoundedRectangle(cornerRadius: 8).fill(Color(nsColor: .textBackgroundColor)))
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(nsColor: .separatorColor).opacity(0.6)))
@@ -608,11 +618,11 @@ struct TodoEditor: View {
                 .labelsHidden().fixedSize()
             }
             TextField("备注（可以不写）", text: $item.note, axis: .vertical)
-                .textFieldStyle(.plain).font(.callout).lineLimit(1...4)
+                .textFieldStyle(.plain).font(.hebiuStyle(.callout)).lineLimit(1...4)
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 8).fill(Color.secondary.opacity(0.08)))
             if item.source != TodoSource.manual && item.source != TodoSource.cli && item.source != TodoSource.agent {
-                Text("这条是\(TodoSource.displayName(item.source))同步来的，在那边改了会覆盖这里").font(.caption).foregroundStyle(.secondary)
+                Text("这条是\(TodoSource.displayName(item.source))同步来的，在那边改了会覆盖这里").font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
             }
             HStack {
                 Button(role: .destructive, action: onDelete) { Label("删除", systemImage: "trash") }
@@ -650,7 +660,7 @@ struct TodoEditor: View {
 
     private func field<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
+            Text(title).font(.hebiuStyle(.caption)).foregroundStyle(.secondary)
             content()
         }
     }

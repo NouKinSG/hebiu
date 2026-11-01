@@ -9,7 +9,7 @@
 
 陪你写代码 · 帮你记事 · 到点叫你 · 形象随你换
 
-[![test](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml/badge.svg)](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-8CC7A1)](LICENSE) [![macOS](https://img.shields.io/badge/macOS-13%2B-3B2F35?logo=apple&logoColor=white)](#快速开始) [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](Package.swift) [![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8CC7A1)](#和-claude-code--codex-一起用)
+[![test](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml/badge.svg)](https://github.com/NouKinSG/hebiu/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-8CC7A1)](LICENSE) [![macOS](https://img.shields.io/badge/macOS-14%2B-3B2F35?logo=apple&logoColor=white)](#快速开始) [![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)](Package.swift) [![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8CC7A1)](#和-claude-code--codex-一起用)
 
 [快速开始](#快速开始) · [使用说明](docs/USAGE.md) · [做自己的形象](docs/CHARACTERS.md) · [常见问题](#常见问题) · [参与贡献](CONTRIBUTING.md)
 
@@ -38,7 +38,7 @@ Hebiu 是一个住在屏幕角落的小角色。你用 Claude Code 或 Codex 写
 
 ## 快速开始
 
-需要 macOS 13 以上，和 Xcode 命令行工具（`xcode-select --install`）。
+需要 macOS 14 以上，和 Xcode 命令行工具（`xcode-select --install`）。
 
 ```bash
 git clone https://github.com/NouKinSG/hebiu.git
@@ -54,6 +54,8 @@ make install          # 编译、装到 ~/Applications、开机自启、启动
 | 和它聊天、让它记住你 | 主窗口「连接 → AI 大脑」粘贴 DeepSeek key，打开开关；之后按 ⌃⌥H 跟它说话 |
 | 换成别的样子 | 「设置 → 形象」，或者[做一个自己的](docs/CHARACTERS.md) |
 | 只在终端里出现 | 「设置 → 在哪显示」选「只在选中的 App」 |
+
+专注计时、记录恢复和全局字体设置见[专注说明](docs/FOCUS.md)。
 
 全部功能和命令见[使用说明](docs/USAGE.md)。
 
@@ -92,7 +94,7 @@ cp -r Resources/characters/default ~/.hebiu/characters/mine
 <details>
 <summary><b>只能在 Mac 上用吗？</b></summary>
 
-是的，界面用的是 AppKit / SwiftUI，需要 macOS 13 以上（Apple 芯片和 Intel 都可以）。形象包、配置文件、钩子格式都是通用的，以后做别的平台可以沿用。
+是的，界面用的是 AppKit / SwiftUI，需要 macOS 14 以上（Apple 芯片和 Intel 都可以）。形象包、配置文件、钩子格式都是通用的，以后做别的平台可以沿用。
 </details>
 
 <details>
